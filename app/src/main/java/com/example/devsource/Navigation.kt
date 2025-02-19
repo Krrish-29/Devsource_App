@@ -8,12 +8,16 @@ import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.Homepage.LoginPage
 import com.example.devsource.Homepage.SignUpPage
 import com.example.devsource.Homepage.HomePage
+import com.example.devsource.Homepage.WelcomePage
 
 @Composable
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "welcome") {
+        composable("welcome"){
+            WelcomePage(modifier, navController)
+        }
         composable("login") {
             LoginPage(modifier, navController, authViewModel)
         }
@@ -23,5 +27,6 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         composable("home") {
             HomePage(modifier, navController, authViewModel)
         }
+
     }
 }
