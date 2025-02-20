@@ -81,6 +81,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             leadingIcon = { Icon(imageVector = Icons.Filled.Lock, contentDescription = null) }
             ,
             shape = RoundedCornerShape(23.dp),
+            singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             value = password,
             onValueChange = { password = it },

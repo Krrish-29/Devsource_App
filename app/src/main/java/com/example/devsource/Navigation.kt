@@ -16,7 +16,7 @@ import com.example.devsource.Homepage.WelcomePage
 @Composable
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
-    val animationDuration = 300  // milliseconds
+    val animationDuration = 300 // milliseconds
 
     NavHost(
         navController = navController,
