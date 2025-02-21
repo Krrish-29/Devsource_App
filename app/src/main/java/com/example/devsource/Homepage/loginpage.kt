@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,6 +81,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             leadingIcon = { Icon(imageVector = Icons.Filled.Lock, contentDescription = null) }
             ,
             shape = RoundedCornerShape(23.dp),
+            singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             value = password,
             onValueChange = { password = it },
@@ -87,7 +89,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
 
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
+        Button(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),onClick = {
             authViewModel.login(email, password)
         }, enabled=authState.value!=AuthState.Loading) {
             Text(text="Login",
@@ -95,7 +97,8 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(text ="Don't have an account ? ")
-        TextButton(onClick = {
+        TextButton(
+            onClick = {
             navController.navigate("signup")
         }) {
             Text(text="Sign Up !!" , fontSize = 18.sp)
