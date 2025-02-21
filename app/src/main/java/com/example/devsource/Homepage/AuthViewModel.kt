@@ -1,9 +1,12 @@
 package com.example.devsource.Homepage
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.runBlocking
 
 class AuthViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -65,13 +68,25 @@ class AuthViewModel : ViewModel() {
                 }
             }
     }
-
     fun signOut() {
         auth.signOut()
         _authState.value = AuthState.Unauthenticated
     }
+    fun loginWithGoogle(context: Context) = runBlocking {
+        _authState.value = AuthState.Loading
+        try {
+            val signInResult = GoogleAuthClient(context).signIn()
+            if (signInResult) {
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Error("Google sign-in failed")
+            }
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error("Google sign-in failed: ${e.message}")
+            if (e is CancellationException) throw e
+        }
+    }
 }
-
 sealed class AuthState {
     object Authenticated : AuthState()
     object Unauthenticated : AuthState()
