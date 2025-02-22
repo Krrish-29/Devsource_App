@@ -20,9 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,14 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.devsource.R
 
@@ -88,7 +85,6 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                     onClick = { authViewModel.loginWithGoogle(context) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(26.dp),
-
                 ) {
                     Row(
                         modifier = Modifier.padding(8.dp),
@@ -98,12 +94,13 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                         Image(
                             painter = painterResource(id = R.drawable.google),
                             contentDescription = "Google",
-                            modifier = Modifier.size(27.dp)
+                            modifier = Modifier.size(22.dp).background(color = Color.White, shape = RoundedCornerShape(20.dp))
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Login With Google",
-                            fontSize = 20.sp
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -121,12 +118,13 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                         Image(
                             painter = painterResource(id = R.drawable.github),
                             contentDescription = "Github",
-                            modifier = Modifier.size(27.dp)
+                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Login With Github",
-                            fontSize = 20.sp
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
                         )
                     }
                 }
@@ -134,8 +132,8 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             }
             Spacer(modifier = Modifier.height(15.dp))
             Text(
-                text = "──── Or Continue With Email ────",
-                fontSize = 20.sp
+                text = "━━━━ Or Continue With Email ━━━━",
+                fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(15.dp))
             OutlinedTextField(
@@ -166,7 +164,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 35.dp),
 
                 horizontalArrangement = Arrangement.End,){
-            Text(text = "Forgotten Password ?", modifier = Modifier.clickable { })
+            Text(text = "Forgotten Password ?", fontSize = 14.sp, modifier = Modifier.clickable { })
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(
@@ -176,7 +174,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             ) {
                 Text(
                     text = "Login !",
-                    fontSize = 20.sp
+                    fontSize = 18.sp
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -185,14 +183,14 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Don’t Have Account ?", fontSize = 16.sp)
+                Text(text = "Don’t Have Account ?", fontSize = 14.sp)
 
                 TextButton(
                     onClick = {
                         navController.navigate("signup")
                     }
                 ) {
-                    Text(text = "Sign Up !!", fontSize = 21.sp , fontWeight = FontWeight.Bold)
+                    Text(text = "Sign Up !!", fontSize = 18.sp , fontWeight = FontWeight.Bold)
                 }
             }
 
