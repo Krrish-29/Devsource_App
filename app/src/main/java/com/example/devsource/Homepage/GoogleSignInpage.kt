@@ -15,7 +15,7 @@ import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.cancellation.CancellationException
 
 class GoogleAuthClient(
-    private val context: Context,
+    private val context: Context
 ) {
 
     private val tag = "GoogleAuthClient: "
@@ -23,7 +23,7 @@ class GoogleAuthClient(
     private val credentialManager = CredentialManager.create(context)
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    fun isSignedIn(): Boolean {
+    private fun googleisSignedIn(): Boolean {
         if (firebaseAuth.currentUser != null) {
             println(tag + "already signed in")
             return true
@@ -31,14 +31,13 @@ class GoogleAuthClient(
         return false
     }
 
-    suspend fun signIn(): Boolean {
-        if (isSignedIn()) {
+    suspend fun googlesignIn(): Boolean {
+        if (googleisSignedIn()) {
             return true
         }
-
         try {
-            val result = buildCredentialRequest()
-            return handleSignIn(result)
+            val result = googlebuildCredentialRequest()
+            return googlehandleSignIn(result)
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
@@ -48,7 +47,7 @@ class GoogleAuthClient(
         }
     }
 
-    private suspend fun handleSignIn(result: GetCredentialResponse): Boolean {
+    private suspend fun googlehandleSignIn(result: GetCredentialResponse): Boolean {
         val credential = result.credential
 
         if (
@@ -62,7 +61,6 @@ class GoogleAuthClient(
 
                 println(tag + "name: ${tokenCredential.displayName}")
                 println(tag + "email: ${tokenCredential.id}")
-                println(tag + "image: ${tokenCredential.profilePictureUri}")
 
                 val authCredential = GoogleAuthProvider.getCredential(
                     tokenCredential.idToken, null
@@ -83,7 +81,7 @@ class GoogleAuthClient(
 
     }
 
-    private suspend fun buildCredentialRequest(): GetCredentialResponse {
+    private suspend fun googlebuildCredentialRequest(): GetCredentialResponse {
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(
                 GetGoogleIdOption.Builder()
@@ -101,7 +99,7 @@ class GoogleAuthClient(
         )
     }
 
-    suspend fun signOut() {
+    suspend fun googlesignOut() {
         credentialManager.clearCredentialState(
             ClearCredentialStateRequest()
         )

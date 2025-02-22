@@ -41,18 +41,26 @@ class AuthViewModel : ViewModel() {
                     _authState.value = AuthState.Authenticated
                 } else {
                     _authState.value = AuthState.Error(
-                        task.exception?.message ?: "Something went wrong, please try again"
+                        "Please enter correct credentials"
                     )
                 }
             }
     }
 
-    fun signup(email: String, password: String) {
-        if (email.isEmpty()) {
+    fun signup(name:String ,phonenumber:String,email: String, password: String) {
+        if (name.isEmpty()) {
+            _authState.value = AuthState.Error("Name cannot be empty")
+            return
+        }
+        else if(phonenumber.isEmpty()&& (phonenumber).length == 10) {
+            _authState.value = AuthState.Error("Phone number cannot be empty")
+            return
+        }
+        else if(email.isEmpty()) {
             _authState.value = AuthState.Error("Email cannot be empty")
             return
         }
-        if (password.isEmpty()) {
+        else if(password.isEmpty()) {
             _authState.value = AuthState.Error("Password cannot be empty")
             return
         }
@@ -63,7 +71,7 @@ class AuthViewModel : ViewModel() {
                     _authState.value = AuthState.Authenticated
                 } else {
                     _authState.value = AuthState.Error(
-                        task.exception?.message ?: "Something went wrong, please try again"
+                        "Please enter correct credentials"
                     )
                 }
             }
@@ -75,7 +83,21 @@ class AuthViewModel : ViewModel() {
     fun loginWithGoogle(context: Context) = runBlocking {
         _authState.value = AuthState.Loading
         try {
-            val signInResult = GoogleAuthClient(context).signIn()
+            val signInResult = GoogleAuthClient(context).googlesignIn()
+            if (signInResult) {
+                _authState.value = AuthState.Authenticated
+            } else {
+                _authState.value = AuthState.Error("Google sign-in failed")
+            }
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error("Google sign-in failed: ${e.message}")
+            if (e is CancellationException) throw e
+        }
+    }
+    fun loginWithGithub(context: Context) = runBlocking {
+        _authState.value = AuthState.Loading
+        try {
+            val signInResult = GoogleAuthClient(context).googlesignIn()
             if (signInResult) {
                 _authState.value = AuthState.Authenticated
             } else {

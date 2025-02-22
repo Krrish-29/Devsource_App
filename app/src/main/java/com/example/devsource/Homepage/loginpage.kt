@@ -134,7 +134,9 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                 contentDescription = "Github",
                 modifier = Modifier
                     .size(40.dp)
-                    .clickable { }
+                    .clickable {
+                        authViewModel.loginWithGithub(context)
+                    }
             )
         }
         Column(

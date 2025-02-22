@@ -23,6 +23,31 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         startDestination = "welcome"
     ) {
         composable(
+            route = "home",
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(animationDuration))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(animationDuration))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(animationDuration))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(animationDuration))
+            }
+        ) {
+            HomePage(modifier, navController, authViewModel)
+        }
+        composable(
             route = "welcome",
             enterTransition = {
                 slideIntoContainer(
@@ -49,7 +74,6 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         ) {
             WelcomePage(modifier, navController)
         }
-
         composable(
             route = "login",
             enterTransition = {
@@ -106,30 +130,6 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
             SignUpPage(modifier, navController, authViewModel)
         }
 
-        composable(
-            route = "home",
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(animationDuration))
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(animationDuration))
-            },
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(animationDuration))
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(animationDuration))
-            }
-        ) {
-            HomePage(modifier, navController, authViewModel)
-        }
+
     }
 }
