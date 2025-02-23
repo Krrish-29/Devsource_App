@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
@@ -33,6 +34,7 @@ import androidx.navigation.NavController
 @Composable
 fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel) {
     val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Unauthenticated -> navController.navigate("login")
@@ -73,19 +75,21 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                 }
             }
         }) {innerpadding->
-        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndex,authViewModel)
+        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndex,authViewModel,navController)
     }
 }
 @Composable
-fun ContentPages(modifier: Modifier=Modifier,selectedindex:Int,authViewModel: AuthViewModel){
+fun ContentPages(modifier: Modifier=Modifier,selectedindex:Int,authViewModel: AuthViewModel,navController: NavController){
+    val context = LocalContext.current
     when (selectedindex){
-        0->Home(authViewModel = AuthViewModel())
-        1->Members(authViewModel = AuthViewModel())
-        2->Tasks(authViewModel = AuthViewModel())
+        0->Home(modifier,authViewModel, navController)
+        1->Members(modifier,authViewModel, navController)
+        2->Tasks(modifier,authViewModel, navController)
     }
 }
 @Composable
-fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
+fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController: NavController){
+    val context = LocalContext.current
     Column(
         modifier=modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -93,14 +97,16 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
     ){
         Text(text="Home")
         TextButton(onClick={
-            authViewModel.signOut()
+            authViewModel.signOut(context)
+            navController.navigate("signup")
         }){
             Text(text="Sign Out")
         }
     }
 }
 @Composable
-fun Members(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
+fun Members(modifier: Modifier=Modifier,authViewModel: AuthViewModel, navController : NavController){
+    val context = LocalContext.current
     Column(
         modifier=modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -108,14 +114,16 @@ fun Members(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
     ){
         Text(text="Members")
         TextButton(onClick={
-            authViewModel.signOut()
+            authViewModel.signOut(context)
+            navController.navigate("login")
         }){
             Text(text="Sign Out")
         }
     }
 }
 @Composable
-fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
+fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel, navController : NavController){
+    val context = LocalContext.current
     Column(
         modifier=modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -123,9 +131,15 @@ fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel){
     ){
         Text(text="Tasks")
         TextButton(onClick={
-            authViewModel.signOut()
+            authViewModel.signOut(context)
+            navController.navigate("login")
         }){
-            Text(text="Sign Out")
+            Text(text="Sign Out")   
         }
     }
 }
+data class NavItem(
+    val label:String,
+    val icon: ImageVector,
+    val badgeCount:Int
+)

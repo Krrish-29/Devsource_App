@@ -68,16 +68,6 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
             else -> Unit
         }
     }
-//    TopAppBar(
-//        title = {
-//            Box(
-//                modifier = Modifier.fillMaxWidth(),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(text = "Sign Up", fontSize = 34.sp, fontWeight = FontWeight.Bold)
-//            }
-//        },windowInsets = WindowInsets.statusBars
-//    )
     Column(
         modifier = modifier.fillMaxSize().verticalScroll(scrollState)
             .padding(WindowInsets.ime.asPaddingValues()) ,
