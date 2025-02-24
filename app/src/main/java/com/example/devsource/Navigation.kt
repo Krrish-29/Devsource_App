@@ -9,10 +9,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.Homepage.HomePage
 import com.example.devsource.Homepage.LoginPage
+import com.example.devsource.Homepage.OtpPage
 import com.example.devsource.Homepage.SignUpPage
 import com.example.devsource.Homepage.WelcomePage
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
@@ -128,6 +128,33 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
             }
         ) {
             SignUpPage(modifier, navController, authViewModel)
+        }
+        composable(
+            route = "otp-page",
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(animationDuration)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(animationDuration)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(animationDuration))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(animationDuration))
+            }
+        ) {
+            OtpPage(modifier, navController,authViewModel)
         }
 
 

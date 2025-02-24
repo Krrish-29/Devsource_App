@@ -164,7 +164,9 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 35.dp),
 
                 horizontalArrangement = Arrangement.End,){
-            Text(text = "Forgotten Password ?", fontSize = 14.sp, modifier = Modifier.clickable { })
+            Text(text = "Forgotten Password ?", fontSize = 14.sp, modifier = Modifier.clickable {
+                navController.navigate("otp-page")
+            })
             }
             Spacer(modifier = Modifier.height(24.dp))
             Button(

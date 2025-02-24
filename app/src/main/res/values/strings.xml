@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Devsource</string>
+    <string name="navigation_bar_open">open_navbar</string>
+    <string name="navigation_bar_close">close_navbar</string>
 </resources>

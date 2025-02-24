@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.devsource.R
 
-
+//Beginning Page that users see at the start of the app
 @Composable
 fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
     Column (modifier = modifier.fillMaxSize(),
@@ -87,5 +87,4 @@ fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
         }
 
     }
-
 }

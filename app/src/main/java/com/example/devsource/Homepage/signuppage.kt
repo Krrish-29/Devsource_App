@@ -55,9 +55,8 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
     val scrollState = rememberScrollState()
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    val pno = 10
     var password by remember { mutableStateOf("") }
+    var confirmpassword by remember { mutableStateOf("") }
     val authState=authViewModel.authState.observeAsState()
     val context= LocalContext.current
     LaunchedEffect(authState.value) {
@@ -94,20 +93,6 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
-
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 35.dp),
-            leadingIcon = { Icon(imageVector = Icons.Filled.Call, contentDescription = null) }
-            ,
-            shape = RoundedCornerShape(23.dp),
-            singleLine = true,
-            value = phone,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            onValueChange = { if (it.length <= pno) phone = it},
-            label = { Text(text = "Phone") }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 35.dp),
             leadingIcon = { Icon(imageVector = Icons.Filled.Email, contentDescription = null) }
             ,
@@ -117,7 +102,6 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
             onValueChange = { email = it },
             label = { Text(text = "Email") }
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 35.dp),
@@ -131,10 +115,25 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
             label = { Text(text = "Password") }
 
         )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 35.dp),
+            leadingIcon = { Icon(imageVector = Icons.Filled.Lock, contentDescription = null) },
+            shape = RoundedCornerShape(23.dp),
+            singleLine = true,
+            value = confirmpassword,
+            onValueChange = { confirmpassword = it },
+            label = { Text(text = "Confirm Password") }
+        )
         Spacer(modifier = Modifier.height(16.dp))
+
+
         Button(onClick = {
-            authViewModel.signup(name,phone,email, password)
-        }, enabled=authState.value!=AuthState.Loading)  {
+            authViewModel.signup(name,email,password)
+        }, enabled=authState.value!=AuthState.Loading && password==confirmpassword)  {
             Text(text="Create Account",fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(5.dp))
