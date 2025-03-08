@@ -17,7 +17,10 @@ val OrangeLight = Color(0xFFFF8C00)   // Dark Orange
 val DeepOrange = Color(0xFFFF5722)    // Deep Orange
 val BurntOrange = Color(0xFFE65100)   // Burnt Orange
 val LightAmber = Color(0xFFFFB74D)    // Light Amber
-val Amber = Color(0xFFFFA000)         // Amber
+val Amber = Color(0xFFFFA000)
+
+
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = DeepOrange,
@@ -34,6 +37,8 @@ private val LightColorScheme = lightColorScheme(
     primaryContainer = OrangeLight,
     secondaryContainer = OrangeDark
 )
+
+
 
 @Composable
 fun Theme(
