@@ -30,20 +30,20 @@ import com.example.devsource.R
 @SuppressLint("ComposableNaming")
 @Composable
 fun OtpPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel):Boolean{
-    var email by remember { mutableStateOf("") }
-    Column(
-        modifier = modifier.fillMaxSize()
-            .padding(WindowInsets.ime.asPaddingValues()) ,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-
-        ) {
-        Text(text = "Sign Up", fontSize = 34.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(32.dp))
-        Image(
-            painterResource(R.drawable.logo2),
-            contentDescription = "logo",
-        )
-    }
+//    var email by remember { mutableStateOf("") }
+//    Column(
+//        modifier = modifier.fillMaxSize()
+//            .padding(WindowInsets.ime.asPaddingValues()) ,
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//
+//        ) {
+//        Text(text = "Sign Up", fontSize = 34.sp, fontWeight = FontWeight.Bold)
+//        Spacer(modifier = Modifier.height(32.dp))
+//        Image(
+//            painterResource(R.drawable.logo2),
+//            contentDescription = "logo",
+//        )
+//    }
     return true
 }
