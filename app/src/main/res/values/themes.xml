@@ -3,7 +3,5 @@
     <style name="Theme.Devsource" parent="android:Theme.Material.Light.NoActionBar" >
     </style>
     <style name="DialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_in</item>
-        <item name="android:windowExitAnimation">@anim/slide_out</item>
     </style>
 </resources>
