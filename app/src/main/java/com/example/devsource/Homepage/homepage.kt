@@ -57,6 +57,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -222,6 +224,8 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
     val database = FirebaseDatabase.getInstance()
     val myRef = database.getReference("Members")
     val context = LocalContext.current
+    val focusRequester = remember { FocusRequester() }
+    val isFocused = remember { mutableStateOf(false) }
     val selectedCategory = remember { mutableStateOf("") }
     val expanded = remember { mutableStateOf(false) }
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
@@ -239,8 +243,11 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
                     categorizedMembers[category] = members
                 }
                 membersMap.value = categorizedMembers
-            }
 
+                if (categorizedMembers.isNotEmpty()) {
+                    selectedCategory.value = categorizedMembers.keys.first()
+                }
+            }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
             }
@@ -249,6 +256,12 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
 
         onDispose {
             myRef.removeEventListener(valueEventListener)
+        }
+    }
+    LaunchedEffect(!isFocused.value) {
+        if (!isFocused.value) {
+            focusRequester.requestFocus()
+            isFocused.value = false
         }
     }
     Column(
@@ -273,7 +286,7 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
                     )
                 },
                 shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.menuAnchor()
+                modifier = Modifier.menuAnchor().focusRequester(focusRequester)
             )
 
             ExposedDropdownMenu(
