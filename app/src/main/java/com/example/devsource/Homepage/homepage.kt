@@ -248,6 +248,7 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
                     selectedCategory.value = categorizedMembers.keys.first()
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
             }
@@ -258,6 +259,15 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
             myRef.removeEventListener(valueEventListener)
         }
     }
+//    LaunchedEffect(Unit) {
+//        val snapshot = myRef.get().await()  // Use kotlinx-coroutines-play-services
+//        val categorizedMembers = snapshot.children.associate { categorySnapshot ->
+//            val category = categorySnapshot.key.orEmpty()
+//            val members = categorySnapshot.children.map { it.key.orEmpty() }
+//            category to members
+//        }
+//    }
+//        membersMap.value=categorizedMembers
     LaunchedEffect(!isFocused.value) {
         if (!isFocused.value) {
             focusRequester.requestFocus()
@@ -309,11 +319,14 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
         Spacer(modifier = Modifier.height(16.dp))
 
 
-
         val teamIcon = when {
             selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
             selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
-            selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
+            selectedCategory.value.contains(
+                "Game",
+                ignoreCase = true
+            ) -> Icons.Default.SportsEsports
+
             else -> Icons.Default.Person
         }
 
@@ -358,7 +371,10 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = member,
-                                style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 18.sp),
+                                style = TextStyle(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 18.sp
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -367,9 +383,7 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
             }
         }
     }
-
 }
-
 @Composable
 fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel, navController : NavController){
     val context = LocalContext.current
