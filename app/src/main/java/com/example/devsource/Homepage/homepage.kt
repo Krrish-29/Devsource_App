@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Menu
@@ -77,7 +78,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
     }
     val bottomnavItemList=listOf(
         BottomNavItem("Home", Icons.Default.Home,0),
-        BottomNavItem("Members", Icons.Default.Person,0),
+        BottomNavItem("Members", Icons.Default.Groups,0),
         BottomNavItem("Task", Icons.Default.DateRange,5)
     )
     val topNavItemList=listOf(
@@ -172,7 +173,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                                 color = if (isSelected) selectedItemColor else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
-                            .padding(vertical = 8.dp)
+
                             .clickable { selectedIndexforbottomnav = index }
                     ) {
                         BadgedBox(badge = {
@@ -187,15 +188,18 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                                 tint = if (isSelected) Color.White else Color.Gray,
                                 modifier = if (isSelected) Modifier.size(25.dp) else Modifier.size(20.dp)
                             )
+
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
-
+//                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = navItem.label,
                             fontSize = 12.sp,
+                            fontWeight =  if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             color = if (isSelected) Color.White else Color.Gray
                         )
+
+
                     }
                 }
             }
