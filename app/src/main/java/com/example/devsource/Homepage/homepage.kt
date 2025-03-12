@@ -196,7 +196,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                                 imageVector = navItem.icon,
                                 contentDescription = "Icon",
                                 tint = if (isSelected) Color.White else Color.Gray,
-                                modifier = Modifier.size(24.dp)
+                                modifier = if (isSelected) Modifier.size(25.dp) else Modifier.size(20.dp)
                             )
                         }
 
