@@ -28,6 +28,7 @@ gmsGoogleServices="4.4.2"
 firebaseDatabaseKtx = "21.0.0"
 
 [libraries]
+androidx-compose-material3-material3 = { module = "androidx.compose.material3:material3" }
 androidx-credentials={module="androidx.credentials:credentials",version.ref="credentialsPlayServicesAuth"}
 androidx-credentials-play-services-auth={module="androidx.credentials:credentials-play-services-auth",version.ref="credentialsPlayServicesAuth"}
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
