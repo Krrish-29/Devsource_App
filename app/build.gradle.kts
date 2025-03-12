@@ -75,8 +75,4 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.material3)
     implementation(libs.androidx.compose.material3.material3)
-  //  implementation (androidx.drawerlayout:drawerlayout:1.2.0)
-
-
-
 }

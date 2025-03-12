@@ -61,7 +61,7 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
     val context= LocalContext.current
     LaunchedEffect(authState.value) {
         when(authState.value){
-            is AuthState.Authenticated -> navController.navigate("home")
+            is AuthState.Authenticated -> navController.navigate("fetchdata")
             is AuthState.Error -> Toast.makeText(context,
                 (authState.value as AuthState.Error).message,Toast.LENGTH_LONG).show()
             else -> Unit

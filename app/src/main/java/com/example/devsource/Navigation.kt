@@ -2,11 +2,14 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.devsource.Homepage.AuthViewModel
+import com.example.devsource.Homepage.Fetchdata
 import com.example.devsource.Homepage.HomePage
 import com.example.devsource.Homepage.LoginPage
 import com.example.devsource.Homepage.OtpPage
@@ -17,6 +20,8 @@ import com.example.devsource.Homepage.WelcomePage
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
     val animationDuration = 300 // milliseconds
+    val selectedCategory = remember { mutableStateOf("") }
+    val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
 
     NavHost(
         navController = navController,
@@ -45,7 +50,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            HomePage(modifier, navController, authViewModel)
+            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap)
         }
         composable(
             route = "welcome",
@@ -72,7 +77,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            WelcomePage(modifier, navController)
+            WelcomePage(modifier, navController,authViewModel)
         }
         composable(
             route = "login",
@@ -156,7 +161,12 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         ) {
             OtpPage(modifier, navController,authViewModel)
         }
-
+        composable(
+            route="fetchdata"
+        )
+        {
+            Fetchdata(modifier, navController, selectedCategory, membersMap)
+        }
 
     }
 }

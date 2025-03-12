@@ -1,5 +1,6 @@
 package com.example.devsource.Homepage
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +39,9 @@ import com.example.devsource.R
 
 //Beginning Page that users see at the start of the app
 @Composable
-fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
+fun WelcomePage(modifier: Modifier = Modifier, navController: NavController,authViewModel: AuthViewModel){
+    val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
     Column (modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
@@ -75,7 +80,11 @@ fun WelcomePage(modifier: Modifier = Modifier, navController: NavController){
         )
         Button(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 17.dp),
             onClick = {
-                navController.navigate("login")
+                when (authState.value) {
+                    is AuthState.Authenticated -> navController.navigate("fetchdata")
+                    is AuthState.Unauthenticated -> navController.navigate("login")
+                    else -> Unit
+                }
             },
         ) {
             Text(text = "Begin", fontSize = 22.sp, fontWeight = FontWeight.Bold)

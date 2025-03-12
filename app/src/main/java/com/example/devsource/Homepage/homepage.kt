@@ -1,6 +1,5 @@
 package com.example.devsource.Homepage
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,12 +29,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material.icons.filled.VideogameAsset
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -46,11 +42,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,17 +63,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import androidx.compose.foundation.layout.Row as Row1
 
 
 @Composable
-fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel) {
+fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>) {
     val authState = authViewModel.authState.observeAsState()
-    val context = LocalContext.current
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Unauthenticated -> navController.navigate("login")
@@ -211,15 +200,14 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                 }
             }
         }) {innerpadding->
-        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndexforbottomnav,authViewModel,navController)
+        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndexforbottomnav,authViewModel,navController, selectedCategory, membersMap)
     }
 }
 @Composable
-fun ContentPages(modifier: Modifier=Modifier,selectedindex:Int,authViewModel: AuthViewModel,navController: NavController){
-    val context = LocalContext.current
+fun ContentPages(modifier: Modifier=Modifier,selectedindex:Int,authViewModel: AuthViewModel,navController: NavController, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>){
     when (selectedindex){
         0->Home(modifier,authViewModel, navController)
-        1->Members(modifier,authViewModel, navController)
+        1->Members(modifier,authViewModel, navController, selectedCategory , membersMap )
         2->Tasks(modifier,authViewModel, navController)
     }
 }
@@ -242,54 +230,10 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController:
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navController: NavController) {
-    val database = FirebaseDatabase.getInstance()
-    val myRef = database.getReference("Members")
-    val context = LocalContext.current
+fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>) {
     val focusRequester = remember { FocusRequester() }
     val isFocused = remember { mutableStateOf(false) }
-    val selectedCategory = remember { mutableStateOf("") }
     val expanded = remember { mutableStateOf(false) }
-    val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
-    DisposableEffect(Unit) {
-        val valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val categorizedMembers = mutableMapOf<String, MutableList<String>>()
-                for (categorySnapshot in snapshot.children) {
-                    val category = categorySnapshot.key.orEmpty()
-                    val members = mutableListOf<String>()
-                    for (memberSnapshot in categorySnapshot.children) {
-                        val member = memberSnapshot.key.orEmpty()
-                        members.add(member)
-                    }
-                    categorizedMembers[category] = members
-                }
-                membersMap.value = categorizedMembers
-
-                if (categorizedMembers.isNotEmpty()) {
-                    selectedCategory.value = categorizedMembers.keys.first()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("FirebaseError", "Failed to read data: ${error.message}")
-            }
-        }
-        myRef.addValueEventListener(valueEventListener)
-
-        onDispose {
-            myRef.removeEventListener(valueEventListener)
-        }
-    }
-//    LaunchedEffect(Unit) {
-//        val snapshot = myRef.get().await()  // Use kotlinx-coroutines-play-services
-//        val categorizedMembers = snapshot.children.associate { categorySnapshot ->
-//            val category = categorySnapshot.key.orEmpty()
-//            val members = categorySnapshot.children.map { it.key.orEmpty() }
-//            category to members
-//        }
-//    }
-//        membersMap.value=categorizedMembers
     LaunchedEffect(!isFocused.value) {
         if (!isFocused.value) {
             focusRequester.requestFocus()
@@ -339,27 +283,18 @@ fun Members(modifier: Modifier = Modifier,authViewModel: AuthViewModel,navContro
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-
         val teamIcon = when {
             selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
             selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
-            selectedCategory.value.contains(
-                "Game",
-                ignoreCase = true
-            ) -> Icons.Default.SportsEsports
-
+            selectedCategory.value.contains("Game",ignoreCase = true) -> Icons.Default.SportsEsports
             else -> Icons.Default.Person
         }
-
-
         val iconTint = when {
             selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
             selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
             selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
             else -> MaterialTheme.colorScheme.onSurface
         }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),

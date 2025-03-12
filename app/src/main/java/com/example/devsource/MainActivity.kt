@@ -2,7 +2,6 @@ package com.example.devsource
 
 import Navigation
 import android.os.Bundle
-import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,14 +20,10 @@ class MainActivity : ComponentActivity() {
         val authViewModel:AuthViewModel by viewModels()
         setContent {
             Theme {
-
                     Scaffold( modifier = Modifier.fillMaxSize() ) { innerPadding ->
                     Navigation(modifier = Modifier.padding(innerPadding), authViewModel = authViewModel)
-
                 }
-
             }
         }
     }
 }
-

@@ -1,10 +1,12 @@
 package com.example.devsource.Homepage
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,12 +22,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +48,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.devsource.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
@@ -198,5 +209,80 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
 
         }
 
+    }
+}
+@Composable
+fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>) {
+    val database = FirebaseDatabase.getInstance()
+    val myRef = database.getReference("Members")
+    val hasNavigated = remember { mutableStateOf(false) }
+    DisposableEffect(Unit) {
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val categorizedMembers = mutableMapOf<String, MutableList<String>>()
+                for (categorySnapshot in snapshot.children) {
+                    val category = categorySnapshot.key.orEmpty()
+                    val members = mutableListOf<String>()
+                    for (memberSnapshot in categorySnapshot.children) {
+                        val member = memberSnapshot.key.orEmpty()
+                        members.add(member)
+                    }
+                    categorizedMembers[category] = members
+                }
+                membersMap.value = categorizedMembers
+
+                if (categorizedMembers.isNotEmpty()) {
+                    selectedCategory.value = categorizedMembers.keys.first()
+                    if (!hasNavigated.value) {
+                        hasNavigated.value = true // Set flag to true after navigation
+                        navController.navigate("home") {
+                            popUpTo("fetchdata") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Failed to read data: ${error.message}")
+            }
+        }
+        myRef.addValueEventListener(valueEventListener)
+
+        onDispose {
+            myRef.removeEventListener(valueEventListener)
+        }
+    }
+    if (membersMap.value.isEmpty()) {
+        LoadingScreen()
+
+    }
+}
+@Composable
+fun LoadingScreen() {
+    var isLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        delay(3000)
+        isLoading = false
+    }
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Please Wait",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
     }
 }
