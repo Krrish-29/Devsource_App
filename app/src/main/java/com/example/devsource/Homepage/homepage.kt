@@ -3,6 +3,7 @@ package com.example.devsource.Homepage
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.VideogameAsset
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -153,39 +155,59 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                     }
                 }
                     }
-
         },
         bottomBar = {
-            val bottomBarColor = if (isSystemInDarkTheme()) Color.DarkGray else Color.LightGray
+            val bottomBarColor = if (isSystemInDarkTheme()) Color(0xFF141218) else Color(0xFFFEF7FF)
+            val selectedItemColor = MaterialTheme.colorScheme.primary
 
             Row1(
                 modifier = Modifier
                     .height(60.dp)
                     .fillMaxWidth()
-                    .background(bottomBarColor),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    .background(
+                        color = bottomBarColor,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                    )
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 bottomnavItemList.forEachIndexed { index, navItem ->
-                    NavigationBarItem(
-                        selected = selectedIndexforbottomnav == index,
-                        onClick = {
-                            selectedIndexforbottomnav = index
-                        },
-                        icon = {
-                            BadgedBox(badge = {
-                                if (navItem.badgeCount > 0)
-                                    Badge {
-                                        Text(text = navItem.badgeCount.toString())
-                                    }
-                            }) {
-                                Icon(imageVector = navItem.icon, contentDescription = "Icon")
-                            }
-                        },
-                        label = {
-                            Text(text = navItem.label)
+                    val isSelected = selectedIndexforbottomnav == index
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp)
+                            .background(
+                                color = if (isSelected) selectedItemColor else Color.Transparent,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(vertical = 8.dp)
+                            .clickable { selectedIndexforbottomnav = index }
+                    ) {
+                        BadgedBox(badge = {
+                            if (navItem.badgeCount > 0)
+                                Badge {
+                                    Text(text = navItem.badgeCount.toString())
+                                }
+                        }) {
+                            Icon(
+                                imageVector = navItem.icon,
+                                contentDescription = "Icon",
+                                tint = if (isSelected) Color.White else Color.Gray,
+                                modifier = if (isSelected) Modifier.size(25.dp) else Modifier.size(20.dp)
+                            )
                         }
-                    )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = navItem.label,
+                            fontSize = 12.sp,
+                            color = if (isSelected) Color.White else Color.Gray
+                        )
+                    }
                 }
             }
         }) {innerpadding->
