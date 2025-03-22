@@ -88,7 +88,7 @@ import androidx.compose.foundation.layout.Row as Row1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>) {
+fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>, aboutmap: MutableState<Map<String, List<String>>>) {
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         when (authState.value) {
@@ -235,7 +235,10 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                                 )
                             },
                             shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier.width(160.dp).menuAnchor().focusRequester(focusRequester)
+                            modifier = Modifier
+                                .width(160.dp)
+                                .menuAnchor()
+                                .focusRequester(focusRequester)
                         )
 
                         ExposedDropdownMenu(
@@ -273,7 +276,9 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                             modifier = Modifier
                                 .weight(1f)
                                 .background(
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.Transparent,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(
+                                        alpha = 0.8f
+                                    ) else Color.Transparent,
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .clickable { selectedIndexforbottomnav = index }
@@ -303,15 +308,15 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                 }
             })
         {innerpadding->
-            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap)
+            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap,aboutmap)
         }
     }
 }
 @Composable
-fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>){
+fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>){
     when (selectedIndexforbottomnav){
         0 -> Home(modifier, authViewModel, navController)
-        1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap)
+        1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap,aboutmap)
         2 -> Tasks(modifier, authViewModel, navController)
     }
 }
@@ -332,9 +337,9 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController:
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>) {
+fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -420,25 +425,50 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            val about=aboutmap.value[selectedCategory.value] ?: emptyList()
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row1(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "$about",
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
             val members = membersMap.value[selectedCategory.value] ?: emptyList()
             items(members) { member ->
                 Card(
                     shape = RoundedCornerShape(25.dp),
                     modifier = Modifier.fillMaxWidth(),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                ) {
+                ){
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surface)
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
-                    ) {
+                    ){
                         Row1(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier.fillMaxWidth()
-                        ) {
+                        ){
                             Icon(
                                 imageVector = teamIcon,
                                 contentDescription = "Team member icon",
@@ -446,7 +476,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
                                 modifier = Modifier.size(24.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(
+                                Text(
                                 text = member,
                                 style = TextStyle(
                                     fontWeight = FontWeight.SemiBold,

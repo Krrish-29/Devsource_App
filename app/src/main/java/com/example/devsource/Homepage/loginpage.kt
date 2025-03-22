@@ -209,12 +209,12 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     }
 }
 @Composable
-fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>) {
+fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>,aboutteamsmap: MutableState<Map<String, List<String>>>) {
     val database = FirebaseDatabase.getInstance()
-    val myRef = database.getReference("Members")
+    val membersref = database.getReference("Members")
     val hasNavigated = remember { mutableStateOf(false) }
     DisposableEffect(Unit) {
-        val valueEventListener = object : ValueEventListener {
+        val memberslistener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val categorizedMembers = mutableMapOf<String, MutableList<String>>()
                 for (categorySnapshot in snapshot.children) {
@@ -231,7 +231,7 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                 if (categorizedMembers.isNotEmpty()) {
                     selectedCategory.value = categorizedMembers.keys.first()
                     if (!hasNavigated.value) {
-                        hasNavigated.value = true // Set flag to true after navigation
+                        hasNavigated.value = true
                         navController.navigate("home") {
                             popUpTo("fetchdata") {
                                 inclusive = true
@@ -240,20 +240,53 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
             }
         }
-        myRef.addValueEventListener(valueEventListener)
-
+        membersref.addValueEventListener(memberslistener)
         onDispose {
-            myRef.removeEventListener(valueEventListener)
+            membersref.removeEventListener(memberslistener)
         }
     }
-    if (membersMap.value.isEmpty()) {
-        LoadingScreen()
+//    if (membersMap.value.isEmpty()) {
+//        LoadingScreen()
+//    }
+    val aboutref=database.getReference("About")
+    DisposableEffect(Unit) {
+        val aboutlisterner = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val categorizedAbout = mutableMapOf<String, String>()
+                    for (teamSnapshot in snapshot.children) {
+                        val teamName = teamSnapshot.key.orEmpty() // Team name
+                        val description = teamSnapshot.getValue(String::class.java).orEmpty()
+                        categorizedAbout[teamName] = description
+                    }
+                    aboutteamsmap.value = categorizedAbout.mapValues { listOf(it.value) }
 
+                if (categorizedAbout.isNotEmpty()) {
+                    selectedCategory.value = categorizedAbout.keys.first()
+                    if (!hasNavigated.value) {
+                        hasNavigated.value = true
+                        navController.navigate("home") {
+                            popUpTo("fetchdata") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Failed to read data: ${error.message}")
+            }
+        }
+        aboutref.addValueEventListener(aboutlisterner)
+        onDispose {
+            aboutref.removeEventListener(aboutlisterner)
+        }
+    }
+    if (aboutteamsmap.value.isEmpty()) {
+        LoadingScreen()
     }
 }
 @Composable

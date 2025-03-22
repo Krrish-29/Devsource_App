@@ -22,6 +22,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val animationDuration = 300 // milliseconds
     val selectedCategory = remember { mutableStateOf("") }
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    val aboutmap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val usernamefordisplay=remember { mutableStateOf("") }
     val useremailfordisplay=remember { mutableStateOf("") }
     NavHost(
@@ -51,7 +52,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,usernamefordisplay,useremailfordisplay)
+            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,usernamefordisplay,useremailfordisplay,aboutmap)
         }
         composable(
             route = "welcome",
@@ -166,7 +167,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
             route="fetchdata"
         )
         {
-            Fetchdata(modifier, navController, selectedCategory, membersMap)
+            Fetchdata(modifier, navController, selectedCategory, membersMap,aboutmap)
         }
 
     }
