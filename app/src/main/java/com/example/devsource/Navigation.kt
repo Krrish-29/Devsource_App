@@ -22,6 +22,9 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val animationDuration = 300 // milliseconds
     val selectedCategory = remember { mutableStateOf("") }
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    var usernamefordisplay=remember { mutableStateOf("") }
+    var useremailfordiaply=remember { mutableStateOf("") }
+
 
     NavHost(
         navController = navController,
@@ -103,7 +106,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            LoginPage(modifier, navController, authViewModel)
+            LoginPage(modifier, navController, authViewModel,useremailfordiaply,usernamefordisplay)
         }
 
         composable(

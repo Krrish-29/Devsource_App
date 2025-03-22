@@ -55,7 +55,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
+fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,usernamefordisplay:String,useremailfordisplay:String) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
@@ -63,7 +63,8 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
 
     LaunchedEffect(authState.value) {
         when (authState.value) {
-            is AuthState.Authenticated -> navController.navigate("home")
+            is AuthState.Authenticated -> //usernamefordisplay=email
+                navController.navigate("home")
             is AuthState.Error -> Toast.makeText(
                 context,
                 (authState.value as AuthState.Error).message, Toast.LENGTH_LONG
@@ -116,7 +117,6 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-
                 Button(
                     onClick = { authViewModel.loginWithGithub(context) },
                     modifier = Modifier.fillMaxWidth(),
@@ -139,7 +139,6 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                         )
                     }
                 }
-
             }
             Spacer(modifier = Modifier.height(15.dp))
             Text(
@@ -206,9 +205,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                     Text(text = "Sign Up !!", fontSize = 18.sp , fontWeight = FontWeight.Bold)
                 }
             }
-
         }
-
     }
 }
 @Composable

@@ -82,74 +82,78 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
         BottomNavItem("Task", Icons.Default.DateRange,5)
     )
     val topNavItemList=listOf(
-        TopNavItem("Menu", Icons.Filled.Menu,0),
-        TopNavItem("More", Icons.Filled.MoreVert,0),
+        TopNavItem("Menu", Icons.Filled.Menu),
+        TopNavItem("More", Icons.Filled.MoreVert),
     )
     var selectedIndexforbottomnav by remember {
         mutableIntStateOf(0)
     }
     var selectedIndexfortopnav by remember {
-        mutableIntStateOf(0)
+        mutableIntStateOf(3)
     }
+    var isSidebarOpen by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
+            val topbarcolor = if (isSystemInDarkTheme()) Color(0xFF363349) else Color(0xFFFEF7FF)
             Row1(
                 modifier = Modifier
                     .height(60.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(60.dp),
+                    .fillMaxWidth()
+                    .background(
+                        color = topbarcolor,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                    )
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
-            ){
-                topNavItemList.forEachIndexed{ index,navItem->
-                    if(index==0){
+            ) {
+                topNavItemList.forEachIndexed { index, navItem ->
+                    val isSelected = selectedIndexfortopnav == index
+                    if (index == 0) {
                         NavigationBarItem(
-                            selected = selectedIndexfortopnav==index,
-                            onClick={
-                                selectedIndexfortopnav=index
+                            selected = isSelected,
+                            onClick = {
+                                isSidebarOpen = true
+                                selectedIndexfortopnav = index
                             },
-                            icon={
-                                BadgedBox(badge={
-                                    if(navItem.badgeCount>0)
-                                        Badge{
-                                            Text(text=navItem.badgeCount.toString())
-                                        }
-                                }) { Icon(imageVector=navItem.icon, contentDescription = "Icon")
-                                }
+                            icon = {
+                                Icon(imageVector = navItem.icon, contentDescription = "Menu Icon")
                             },
-                            label={
-                                Text(text=navItem.label)
+                            label = {
+                                Text(text = navItem.label)
                             }
                         )
-                    }
-                    else{
-                        Spacer(modifier=Modifier.weight(1f))
+                    } else {
+                        Spacer(modifier = Modifier.weight(5f))
                         NavigationBarItem(
-                            selected = selectedIndexfortopnav==index,
-                            onClick={
-                                selectedIndexfortopnav=index
-                            },
-                            icon={
-                                BadgedBox(badge={
-                                    if(navItem.badgeCount>0)
-                                        Badge{
-                                            Text(text=navItem.badgeCount.toString())
-                                        }
-                                }) { Icon(imageVector=navItem.icon, contentDescription = "Icon")
+                            selected = isSelected,
+                            onClick = {
+                                if(isSelected){
+                                    isSidebarOpen=false
+                                    selectedIndexfortopnav=-1
+
                                 }
+                                else{
+                                    isSidebarOpen = false
+                                    selectedIndexfortopnav = index
+                                }
+
                             },
-                            label={
-                                Text(text=navItem.label)
+                            icon = {
+                                Icon(imageVector = navItem.icon, contentDescription = "Icon")
+                            },
+                            label = {
+                                Text(text = navItem.label)
                             }
                         )
                     }
                 }
-                    }
+            }
         },
         bottomBar = {
-            val bottomBarColor = if (isSystemInDarkTheme()) Color(0xFF141218) else Color(0xFFFEF7FF)
+            val bottomBarColor = if (isSystemInDarkTheme()) Color(0xFF363349) else Color(0xFFFEF7FF)
             val selectedItemColor = MaterialTheme.colorScheme.primary
-
             Row1(
                 modifier = Modifier
                     .height(60.dp)
@@ -173,7 +177,6 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                                 color = if (isSelected) selectedItemColor else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             )
-
                             .clickable { selectedIndexforbottomnav = index }
                     ) {
                         BadgedBox(badge = {
@@ -190,8 +193,6 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                             )
 
                         }
-
-//                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = navItem.label,
                             fontSize = 12.sp,
@@ -204,12 +205,18 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                 }
             }
         }) {innerpadding->
-        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndexforbottomnav,authViewModel,navController, selectedCategory, membersMap)
+        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndexfortopnav,selectedIndexforbottomnav,authViewModel,navController, selectedCategory, membersMap)
     }
 }
 @Composable
-fun ContentPages(modifier: Modifier=Modifier,selectedindex:Int,authViewModel: AuthViewModel,navController: NavController, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>){
-    when (selectedindex){
+fun ContentPages(modifier: Modifier=Modifier,selectedIndexfortopnav:Int,selectedIndexforbottomnav:Int,authViewModel: AuthViewModel,navController: NavController, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>){
+    when (selectedIndexfortopnav){
+        0-> Horizontalpage(modifier,authViewModel, navController)
+//        1->
+//        1->Members(modifier,authViewModel, navController, selectedCategory , membersMap )
+//        2->Tasks(modifier,authViewModel, navController)
+    }
+    when (selectedIndexforbottomnav){
         0->Home(modifier,authViewModel, navController)
         1->Members(modifier,authViewModel, navController, selectedCategory , membersMap )
         2->Tasks(modifier,authViewModel, navController)
@@ -369,6 +376,5 @@ data class BottomNavItem(
 )
 data class TopNavItem(
     val label:String,
-    val icon: ImageVector,
-    val badgeCount:Int
+    val icon: ImageVector
 )
