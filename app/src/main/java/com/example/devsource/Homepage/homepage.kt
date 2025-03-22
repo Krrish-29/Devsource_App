@@ -354,7 +354,6 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
             verticalAlignment = Alignment.CenterVertically
         ) {
             val teamCategories = membersMap.value.keys.toList()
-
             teamCategories.take(3).forEach { category ->
                 val isSelected = selectedCategory.value == category
                 val teamIcon = when {
@@ -425,7 +424,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val about=aboutmap.value[selectedCategory.value] ?: emptyList()
+            val about = aboutmap.value[selectedCategory.value]?.joinToString(separator = "\n") ?: "No information available."
             item {
                 Box(
                     modifier = Modifier
@@ -440,7 +439,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "$about",
+                            text = about,
                             style = TextStyle(
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 18.sp
