@@ -1,7 +1,9 @@
 package com.example.devsource.Homepage
 
+import android.view.Menu
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Divider
@@ -25,9 +27,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,7 +49,9 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -80,8 +86,9 @@ import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Row as Row1
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>) {
+fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>) {
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         when (authState.value) {
@@ -105,9 +112,17 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
     var selectedIndexfortopnav by remember {
         mutableIntStateOf(3)
     }
-    var drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val focusRequester = remember { FocusRequester() }
+    val isFocused = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
+    LaunchedEffect(!isFocused.value) {
+        if (!isFocused.value) {
+            focusRequester.requestFocus()
+            isFocused.value = false
+        }
+    }
     val scope = rememberCoroutineScope()
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -123,7 +138,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "DevSource",
+                        text = "$usernamefordisplay",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -190,6 +205,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                     IconButton(onClick = {
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                            expanded.value = false
                         }
                     }) {
                         Icon(
@@ -197,22 +213,47 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                             contentDescription = "Menu"
                         )
                     }
-
                     Spacer(modifier = Modifier.weight(1f))
-
                     Text(
                         text = "DevSource",
                         style = MaterialTheme.typography.titleLarge
                     )
-
                     Spacer(modifier = Modifier.weight(1f))
-
-                    IconButton(onClick = {
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More Options"
+                    ExposedDropdownMenuBox(
+                        expanded = expanded.value,
+                        onExpandedChange = { expanded.value = !expanded.value }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedCategory.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Select Team") },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = if (expanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                    contentDescription = null
+                                )
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.width(160.dp).menuAnchor().focusRequester(focusRequester)
                         )
+
+                        ExposedDropdownMenu(
+                            shape = RoundedCornerShape(16.dp),
+                            expanded = expanded.value,
+                            onDismissRequest = { expanded.value = false },
+                            modifier = Modifier.width(160.dp)
+                        ) {
+                            membersMap.value.keys.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category) },
+                                    onClick = {
+                                        selectedCategory.value=category
+                                        expanded.value = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             },
@@ -231,7 +272,6 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .weight(1f)
-                                //.padding(vertical = 8.dp)
                                 .background(
                                     color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.Transparent,
                                     shape = RoundedCornerShape(12.dp)
@@ -261,24 +301,18 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                         }
                     }
                 }
-            }) {innerpadding->
-            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexfortopnav, selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap)
+            })
+        {innerpadding->
+            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap)
         }
     }
 }
-
 @Composable
-fun ContentPages(modifier: Modifier=Modifier, selectedIndexfortopnav:Int, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>){
-    if (selectedIndexfortopnav != 3) {
-        when (selectedIndexfortopnav){
-            0 -> Horizontalpage(modifier, authViewModel, navController)
-        }
-    } else {
-        when (selectedIndexforbottomnav){
-            0 -> Home(modifier, authViewModel, navController)
-            1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap)
-            2 -> Tasks(modifier, authViewModel, navController)
-        }
+fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>){
+    when (selectedIndexforbottomnav){
+        0 -> Home(modifier, authViewModel, navController)
+        1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap)
+        2 -> Tasks(modifier, authViewModel, navController)
     }
 }
 @Composable
@@ -301,62 +335,77 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController:
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>) {
-    val focusRequester = remember { FocusRequester() }
-    val isFocused = remember { mutableStateOf(false) }
-    val expanded = remember { mutableStateOf(false) }
-    LaunchedEffect(!isFocused.value) {
-        if (!isFocused.value) {
-            focusRequester.requestFocus()
-            isFocused.value = false
-        }
-    }
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Members", style = MaterialTheme.typography.headlineMedium)
-        ExposedDropdownMenuBox(
-            expanded = expanded.value,
-            onExpandedChange = { expanded.value = !expanded.value }
-        ) {
-            OutlinedTextField(
-                value = selectedCategory.value,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Select Team") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = if (expanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        contentDescription = null
-                    )
-                },
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.menuAnchor().focusRequester(focusRequester)
-            )
 
-            ExposedDropdownMenu(
-                shape = RoundedCornerShape(16.dp),
-                expanded = expanded.value,
-                onDismissRequest = { expanded.value = false }
-            ) {
-                membersMap.value.keys.forEach { category ->
-                    DropdownMenuItem(
-                        text = { Text(category) },
-                        onClick = {
-                            selectedCategory.value = category
-                            expanded.value = false
-                        }
-                    )
+        Row1(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val teamCategories = membersMap.value.keys.toList()
+
+            teamCategories.take(3).forEach { category ->
+                val isSelected = selectedCategory.value == category
+                val teamIcon = when {
+                    category.contains("Android", ignoreCase = true) -> Icons.Default.Android
+                    category.contains("Web", ignoreCase = true) -> Icons.Default.Language
+                    category.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
+                    else -> Icons.Default.Person
+                }
+                val iconTint = when {
+                    category.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+                    category.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+                    category.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .clickable { selectedCategory.value = category }
+                        .padding(vertical = 8.dp, horizontal = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = teamIcon,
+                            contentDescription = "Team icon",
+                            tint = if (isSelected) iconTint else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = category,
+                            fontSize = 14.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         val teamIcon = when {
             selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
             selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
-            selectedCategory.value.contains("Game",ignoreCase = true) -> Icons.Default.SportsEsports
+            selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
             else -> Icons.Default.Person
         }
         val iconTint = when {
@@ -365,6 +414,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
             selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
             else -> MaterialTheme.colorScheme.onSurface
         }
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -386,7 +436,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
                     ) {
                         Row1(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
+                            horizontalArrangement = Arrangement.Start,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
@@ -395,7 +445,7 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
                                 tint = iconTint,
                                 modifier = Modifier.size(24.dp)
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = member,
                                 style = TextStyle(
