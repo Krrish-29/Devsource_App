@@ -106,7 +106,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            LoginPage(modifier, navController, authViewModel,useremailfordiaply,usernamefordisplay)
+            LoginPage(modifier, navController, authViewModel)
         }
 
         composable(
