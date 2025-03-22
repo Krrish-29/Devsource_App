@@ -55,7 +55,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,usernamefordisplay:String,useremailfordisplay:String) {
+fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()

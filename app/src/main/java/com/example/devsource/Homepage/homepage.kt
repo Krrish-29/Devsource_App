@@ -2,6 +2,19 @@ package com.example.devsource.Homepage
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -81,6 +94,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
         BottomNavItem("Members", Icons.Default.Groups,0),
         BottomNavItem("Task", Icons.Default.DateRange,5)
     )
+    val context = LocalContext.current
     val topNavItemList=listOf(
         TopNavItem("Menu", Icons.Filled.Menu),
         TopNavItem("More", Icons.Filled.MoreVert),
@@ -91,135 +105,180 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
     var selectedIndexfortopnav by remember {
         mutableIntStateOf(3)
     }
-    var isSidebarOpen by remember { mutableStateOf(false) }
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            val topbarcolor = if (isSystemInDarkTheme()) Color(0xFF363349) else Color(0xFFFEF7FF)
-            Row1(
-                modifier = Modifier
-                    .height(60.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = topbarcolor,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                    )
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+    var drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.width(300.dp),
+                drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
             ) {
-                topNavItemList.forEachIndexed { index, navItem ->
-                    val isSelected = selectedIndexfortopnav == index
-                    if (index == 0) {
-                        NavigationBarItem(
-                            selected = isSelected,
-                            onClick = {
-                                isSidebarOpen = true
-                                selectedIndexfortopnav = index
-                            },
-                            icon = {
-                                Icon(imageVector = navItem.icon, contentDescription = "Menu Icon")
-                            },
-                            label = {
-                                Text(text = navItem.label)
-                            }
-                        )
-                    } else {
-                        Spacer(modifier = Modifier.weight(5f))
-                        NavigationBarItem(
-                            selected = isSelected,
-                            onClick = {
-                                if(isSelected){
-                                    isSidebarOpen=false
-                                    selectedIndexfortopnav=-1
-
-                                }
-                                else{
-                                    isSidebarOpen = false
-                                    selectedIndexfortopnav = index
-                                }
-
-                            },
-                            icon = {
-                                Icon(imageVector = navItem.icon, contentDescription = "Icon")
-                            },
-                            label = {
-                                Text(text = navItem.label)
-                            }
-                        )
-                    }
+                Spacer(Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "DevSource",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-            }
-        },
-        bottomBar = {
-            val bottomBarColor = if (isSystemInDarkTheme()) Color(0xFF363349) else Color(0xFFFEF7FF)
-            val selectedItemColor = MaterialTheme.colorScheme.primary
-            Row1(
-                modifier = Modifier
-                    .height(60.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = bottomBarColor,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                    )
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                bottomnavItemList.forEachIndexed { index, navItem ->
-                    val isSelected = selectedIndexforbottomnav == index
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(vertical = 8.dp)
-                            .background(
-                                color = if (isSelected) selectedItemColor else Color.Transparent,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clickable { selectedIndexforbottomnav = index }
-                    ) {
-                        BadgedBox(badge = {
-                            if (navItem.badgeCount > 0)
-                                Badge {
-                                    Text(text = navItem.badgeCount.toString())
-                                }
-                        }) {
-                            Icon(
-                                imageVector = navItem.icon,
-                                contentDescription = "Icon",
-                                tint = if (isSelected) Color.White else Color.Gray,
-                                modifier = if (isSelected) Modifier.size(25.dp) else Modifier.size(20.dp)
-                            )
+                Divider()
+                Spacer(Modifier.height(8.dp))
 
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") },
+                    selected = selectedIndexforbottomnav == 0,
+                    onClick = {
+                        selectedIndexforbottomnav = 0
+                        scope.launch { drawerState.close() }
+                    }
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Groups, contentDescription = "Members") },
+                    label = { Text("Members") },
+                    selected = selectedIndexforbottomnav == 1,
+                    onClick = {
+                        selectedIndexforbottomnav = 1
+                        scope.launch { drawerState.close() }
+                    }
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.DateRange, contentDescription = "Tasks") },
+                    label = { Text("Tasks") },
+                    selected = selectedIndexforbottomnav == 2,
+                    onClick = {
+                        selectedIndexforbottomnav = 2
+                        scope.launch { drawerState.close() }
+                    }
+                )
+
+                Divider()
+                Spacer(Modifier.height(8.dp))
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = "Sign Out") },
+                    label = { Text("Sign Out") },
+                    selected = false,
+                    onClick = {
+                        authViewModel.signOut(context)
+                        navController.navigate("login")
+                    }
+                )
+            }
+        }
+    ) {
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            topBar = {
+                Row1(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        scope.launch {
+                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
-                        Text(
-                            text = navItem.label,
-                            fontSize = 12.sp,
-                            fontWeight =  if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) Color.White else Color.Gray
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Menu"
                         )
+                    }
 
+                    Spacer(modifier = Modifier.weight(1f))
 
+                    Text(
+                        text = "DevSource",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    IconButton(onClick = {
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More Options"
+                        )
                     }
                 }
-            }
-        }) {innerpadding->
-        ContentPages(modifier=Modifier.padding(innerpadding),selectedIndexfortopnav,selectedIndexforbottomnav,authViewModel,navController, selectedCategory, membersMap)
+            },
+            bottomBar = {
+                Row1(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    bottomnavItemList.forEachIndexed { index, navItem ->
+                        val isSelected = selectedIndexforbottomnav == index
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .weight(1f)
+                                //.padding(vertical = 8.dp)
+                                .background(
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) else Color.Transparent,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .clickable { selectedIndexforbottomnav = index }
+                                .padding(vertical = 4.dp)
+                        ) {
+                            BadgedBox(badge = {
+                                if (navItem.badgeCount > 0)
+                                    Badge {
+                                        Text(text = navItem.badgeCount.toString())
+                                    }
+                            }) {
+                                Icon(
+                                    imageVector = navItem.icon,
+                                    contentDescription = "Icon",
+                                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                    modifier = if (isSelected) Modifier.size(25.dp) else Modifier.size(20.dp)
+                                )
+                            }
+                            Text(
+                                text = navItem.label,
+                                fontSize = 12.sp,
+                                fontWeight =  if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }) {innerpadding->
+            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexfortopnav, selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap)
+        }
     }
 }
+
 @Composable
-fun ContentPages(modifier: Modifier=Modifier,selectedIndexfortopnav:Int,selectedIndexforbottomnav:Int,authViewModel: AuthViewModel,navController: NavController, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>){
-    when (selectedIndexfortopnav){
-        0-> Horizontalpage(modifier,authViewModel, navController)
-//        1->
-//        1->Members(modifier,authViewModel, navController, selectedCategory , membersMap )
-//        2->Tasks(modifier,authViewModel, navController)
-    }
-    when (selectedIndexforbottomnav){
-        0->Home(modifier,authViewModel, navController)
-        1->Members(modifier,authViewModel, navController, selectedCategory , membersMap )
-        2->Tasks(modifier,authViewModel, navController)
+fun ContentPages(modifier: Modifier=Modifier, selectedIndexfortopnav:Int, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>){
+    if (selectedIndexfortopnav != 3) {
+        when (selectedIndexfortopnav){
+            0 -> Horizontalpage(modifier, authViewModel, navController)
+        }
+    } else {
+        when (selectedIndexforbottomnav){
+            0 -> Home(modifier, authViewModel, navController)
+            1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap)
+            2 -> Tasks(modifier, authViewModel, navController)
+        }
     }
 }
 @Composable
