@@ -80,6 +80,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -113,15 +114,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
         mutableIntStateOf(3)
     }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val focusRequester = remember { FocusRequester() }
-    val isFocused = remember { mutableStateOf(false) }
     val expanded = remember { mutableStateOf(false) }
-    LaunchedEffect(!isFocused.value) {
-        if (!isFocused.value) {
-            focusRequester.requestFocus()
-            isFocused.value = false
-        }
-    }
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -199,7 +192,7 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                         .height(60.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
@@ -213,45 +206,80 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                             contentDescription = "Menu"
                         )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
+
                     Text(
                         text = "DevSource",
                         style = MaterialTheme.typography.titleLarge
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    ExposedDropdownMenuBox(
-                        expanded = expanded.value,
-                        onExpandedChange = { expanded.value = !expanded.value }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedCategory.value,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Select Team") },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = if (expanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                    contentDescription = null
-                                )
-                            },
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier
-                                .width(160.dp)
-                                .menuAnchor()
-                                .focusRequester(focusRequester)
-                        )
 
-                        ExposedDropdownMenu(
-                            shape = RoundedCornerShape(16.dp),
+
+                    Box(
+                        modifier = Modifier
+                            .size(54.dp)
+                            .padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TextButton(
+                            onClick = { expanded.value = !expanded.value },
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            val teamIcon = when {
+                                selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
+                                selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
+                                selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
+                                else -> Icons.Default.Person
+                            }
+
+                            val iconTint = when {
+                                selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+                                selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+                                selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+
+                            Icon(
+                                imageVector = teamIcon,
+                                contentDescription = "Select team",
+                                tint = iconTint,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+
+                        DropdownMenu(
                             expanded = expanded.value,
                             onDismissRequest = { expanded.value = false },
-                            modifier = Modifier.width(160.dp)
+                            modifier = Modifier
+                                .width(160.dp),
+                            offset = DpOffset(x = 0.dp, y = 4.dp)
                         ) {
                             membersMap.value.keys.forEach { category ->
+                                val itemIcon = when {
+                                    category.contains("Android", ignoreCase = true) -> Icons.Default.Android
+                                    category.contains("Web", ignoreCase = true) -> Icons.Default.Language
+                                    category.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
+                                    else -> Icons.Default.Person
+                                }
+
+                                val itemIconTint = when {
+                                    category.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+                                    category.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+                                    category.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+
                                 DropdownMenuItem(
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = itemIcon,
+                                            contentDescription = null,
+                                            tint = itemIconTint
+                                        )
+                                    },
                                     text = { Text(category) },
                                     onClick = {
-                                        selectedCategory.value=category
+                                        selectedCategory.value = category
                                         expanded.value = false
                                     }
                                 )
@@ -503,7 +531,7 @@ fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel, navControlle
             authViewModel.signOut(context)
             navController.navigate("login")
         }){
-            Text(text="Sign Out")   
+            Text(text="Sign Out")
         }
     }
 }
