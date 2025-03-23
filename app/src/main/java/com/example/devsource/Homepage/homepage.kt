@@ -1,6 +1,9 @@
 package com.example.devsource.Homepage
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.ExitToApp
@@ -28,9 +31,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Copyright
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Language
@@ -38,6 +45,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.outlined.Copyright
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -64,19 +72,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlin.math.absoluteValue
 import androidx.compose.foundation.layout.Row as Row1
+import androidx.core.net.toUri
+import com.example.devsource.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>, aboutmap: MutableState<Map<String, List<String>>>,tasksmap : MutableState<Map<String, List<Pair<String, String>>>>,) {
+fun HomePage(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    selectedCategory: MutableState<String>,
+    membersMap: MutableState<Map<String, List<String>>>,
+    usernamefordisplay: MutableState<String>,
+    useremailfordisplay: MutableState<String>,
+    aboutmap: MutableState<Map<String, List<String>>>,
+    tasksmap: MutableState<Map<String, List<Pair<String, String>>>>
+) {
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         when (authState.value) {
@@ -104,6 +129,22 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val dialog=false
+    var showDialog_aboutus by remember { mutableStateOf(false) }
+    var showDialog_termsandcondition by remember { mutableStateOf(false) }
+    val annotatedString = buildAnnotatedString {
+        append("")
+        // Add a clickable link
+        pushStringAnnotation(
+            tag = "URL",
+            annotation = "https://www.example.com"
+        )
+        withStyle(style = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)) {
+            append("website")
+        }
+        pop()
+        append(" for more information.")
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -136,7 +177,6 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                         scope.launch { drawerState.close() }
                     }
                 )
-
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Groups, contentDescription = "Members") },
                     label = { Text("Members") },
@@ -156,6 +196,46 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                         scope.launch { drawerState.close() }
                     }
                 )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
+                    label = { Text("About Us") },
+                    selected = false,
+                    onClick = {
+                            showDialog_aboutus=true
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Outlined.Copyright, contentDescription = "Home") },
+                    label = { Text("Terms & Conditions") },
+                    selected = false,
+                    onClick = {
+                        showDialog_termsandcondition = true
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Feedback, contentDescription = "Home") },
+                    label = { Text("Feedback") },
+                    selected = false,
+                    onClick = {
+                        val feedback = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://docs.google.com/forms/d/e/1FAIpQLSftDN91vkdhso_oQV7uTmjvi50-bc_6_LRp8WVKyI4ANxIorQ/viewform?usp=dialog".toUri()
+                        )
+                        context.startActivity(feedback)
+                    }
+                )
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Android, contentDescription = "Home") },
+                    label = { Text("Report Bug") },
+                    selected = false,
+                    onClick = {
+                        val bug = Intent(
+                            Intent.ACTION_VIEW,
+                            "https://github.com/Krrish-29/Devsource_App/issues/new".toUri()
+                        )
+                        context.startActivity(bug)
+                    }
+                )
 
                 Divider()
                 Spacer(Modifier.height(8.dp))
@@ -167,6 +247,70 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                     onClick = {
                         authViewModel.signOut(context)
                         navController.navigate("login")
+                    }
+                )
+            }
+            if (showDialog_termsandcondition && dialog != null) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog_termsandcondition = false
+                    },
+                    title = { Text(text = "Terms & Conditions ") },
+                    text = { Text(text = "We only collect the user name , email and phone number .\nThe data collected is not shared or distributed.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDialog_termsandcondition = false
+                        }) {
+                            Text(text = "Close")
+                        }
+                    }
+                )
+            }
+            if (showDialog_aboutus && dialog != null) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog_aboutus = false
+                    }, // Close the dialog on dismissal
+                    title = { Text("About Us") },
+                    text = {
+                        Column {
+                            Text(
+                                text = "We are a team dedicated to providing the best services to our users.\n\nDevelopers:",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Anurag Kumar Singh ",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            ClickableLink(
+                                label = "LinkedIn",
+                                url = "https://www.linkedin.com/in/anurag-kumar-singh-56718427b/"
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            ClickableLink(
+                                label = "Github",
+                                url = "https://github.com/shinobi04"
+                            )
+                            Text(
+                                text = "Krrish Khowal",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            ClickableLink(
+                                label = "LinkedIn",
+                                url = "https://www.linkedin.com/in/krrish-khowal-150885311/"
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            ClickableLink(
+                                label = "Github",
+                                url = "https://github.com/Krrish-29"
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showDialog_aboutus = false }) {
+                            Text("Close")
+                        }
                     }
                 )
             }
@@ -199,8 +343,6 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                         text = "DevSource",
                         style = MaterialTheme.typography.titleLarge
                     )
-
-
                     Box(
                         modifier = Modifier
                             .size(54.dp)
@@ -328,6 +470,23 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
         }
     }
 }
+
+@Composable
+fun ClickableLink(label: String, url: String) {
+    val context = LocalContext.current
+    Text(
+        text = label,
+        style = TextStyle(
+            color = Color.Blue,
+            textDecoration = TextDecoration.Underline,
+            fontSize = 16.sp
+        ),
+        modifier = Modifier.clickable {
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+            context.startActivity(intent)
+        }
+    )
+}
 @Composable
 fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,totalTasks:MutableState<Int>){
     when (selectedIndexforbottomnav){
@@ -361,7 +520,6 @@ fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Row1(
             modifier = Modifier
                 .fillMaxWidth()
@@ -608,9 +766,7 @@ fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<
                 Text(text = selectedtask?.first ?: "Task Details")
             },
             text = {
-                Text(
-                    text = selectedtask?.second ?: "No description available"
-                )
+                Text(text = selectedtask?.second ?: "No description available")
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false
