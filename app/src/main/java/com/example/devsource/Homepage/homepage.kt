@@ -355,12 +355,7 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController:
 }
 
 @Composable
-fun Members(
-    modifier: Modifier = Modifier,
-    selectedCategory: MutableState<String>,
-    membersMap: MutableState<Map<String, List<String>>>,
-    aboutmap: MutableState<Map<String, List<String>>>
-) {
+fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>,aboutmap: MutableState<Map<String, List<String>>>) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -534,7 +529,7 @@ fun Members(
 }
 @Composable
 fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,selectedCategory: MutableState<String>,totalTasks: MutableState<Int>){
-//    totalTasks.value=0
+    totalTasks.value=0
     var showDialog by remember { mutableStateOf(false) }
     var selectedtask by remember { mutableStateOf<Pair<String, String>?>(null) }
     Column(
@@ -603,6 +598,7 @@ fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<
             }
         }
     }
+
     if (showDialog && selectedtask != null) {
         AlertDialog(
             onDismissRequest = {
@@ -618,7 +614,7 @@ fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false
-                totalTasks.value-=1}) {
+                }) {
                     Text(text = "Close")
                 }
             }
