@@ -2,6 +2,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val selectedCategory = remember { mutableStateOf("") }
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val aboutmap = remember { mutableStateOf(mapOf<String, List<String>>()) }
+    val tasksmap = remember { mutableStateOf<Map<String, List<Pair<String, String>>>>(emptyMap()) }
     val usernamefordisplay=remember { mutableStateOf("") }
     val useremailfordisplay=remember { mutableStateOf("") }
     NavHost(
@@ -52,7 +54,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,usernamefordisplay,useremailfordisplay,aboutmap)
+            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,usernamefordisplay,useremailfordisplay,aboutmap,tasksmap)
         }
         composable(
             route = "welcome",
@@ -167,7 +169,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
             route="fetchdata"
         )
         {
-            Fetchdata(modifier, navController, selectedCategory, membersMap,aboutmap)
+            Fetchdata(modifier, navController, selectedCategory, membersMap,aboutmap,tasksmap)
         }
 
     }

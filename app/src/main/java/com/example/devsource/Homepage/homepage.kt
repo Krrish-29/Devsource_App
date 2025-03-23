@@ -1,9 +1,7 @@
 package com.example.devsource.Homepage
 
-import android.view.Menu
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Divider
@@ -15,10 +13,8 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.CoroutineScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,18 +23,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -47,6 +38,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
@@ -54,11 +46,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -73,23 +62,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlin.math.absoluteValue
 import androidx.compose.foundation.layout.Row as Row1
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>, aboutmap: MutableState<Map<String, List<String>>>) {
+fun HomePage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel, selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>, usernamefordisplay:MutableState<String>,useremailfordisplay:MutableState<String>, aboutmap: MutableState<Map<String, List<String>>>,tasksmap : MutableState<Map<String, List<Pair<String, String>>>>,) {
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         when (authState.value) {
@@ -97,10 +84,11 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
             else -> Unit
         }
     }
+    val totalTasks = remember {  mutableIntStateOf(tasksmap.value.values.sumOf { it.size }) }
     val bottomnavItemList=listOf(
         BottomNavItem("Home", Icons.Default.Home,0),
         BottomNavItem("Members", Icons.Default.Groups,0),
-        BottomNavItem("Task", Icons.Default.DateRange,5)
+        BottomNavItem("Task", Icons.Default.DateRange,totalTasks.value)
     )
     val context = LocalContext.current
     val topNavItemList=listOf(
@@ -336,16 +324,16 @@ fun HomePage(modifier: Modifier=Modifier, navController: NavController, authView
                 }
             })
         {innerpadding->
-            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap,aboutmap)
+            ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap,aboutmap, tasksmap,totalTasks)
         }
     }
 }
 @Composable
-fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>){
+fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,totalTasks:MutableState<Int>){
     when (selectedIndexforbottomnav){
         0 -> Home(modifier, authViewModel, navController)
-        1 -> Members(modifier, authViewModel, navController, selectedCategory, membersMap,aboutmap)
-        2 -> Tasks(modifier, authViewModel, navController)
+        1 -> Members(modifier, selectedCategory, membersMap, aboutmap)
+        2 -> Tasks(modifier, tasksmap, selectedCategory,totalTasks)
     }
 }
 @Composable
@@ -367,7 +355,12 @@ fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController:
 }
 
 @Composable
-fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>) {
+fun Members(
+    modifier: Modifier = Modifier,
+    selectedCategory: MutableState<String>,
+    membersMap: MutableState<Map<String, List<String>>>,
+    aboutmap: MutableState<Map<String, List<String>>>
+) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -446,13 +439,23 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
             selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
             else -> MaterialTheme.colorScheme.onSurface
         }
-
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val about = aboutmap.value[selectedCategory.value]?.joinToString(separator = "\n") ?: "No information available."
+            item {
+                Text(
+                    text = "About",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+            }
             item {
                 Box(
                     modifier = Modifier
@@ -476,6 +479,17 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
                         )
                     }
                 }
+            }
+            item {
+                Text(
+                    text = "Members",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
             }
             val members = membersMap.value[selectedCategory.value] ?: emptyList()
             items(members) { member ->
@@ -519,20 +533,96 @@ fun Members(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navCont
     }
 }
 @Composable
-fun Tasks(modifier: Modifier=Modifier,authViewModel: AuthViewModel, navController : NavController){
-    val context = LocalContext.current
+fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,selectedCategory: MutableState<String>,totalTasks: MutableState<Int>){
+//    totalTasks.value=0
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedtask by remember { mutableStateOf<Pair<String, String>?>(null) }
     Column(
-        modifier=modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text(text="Tasks")
-        TextButton(onClick={
-            authViewModel.signOut(context)
-            navController.navigate("login")
-        }){
-            Text(text="Sign Out")
+    ) {
+        Text(text = "Tasks", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            val taskslist = tasksmap.value[selectedCategory.value] ?: emptyList()
+            if (taskslist.isEmpty()) {
+                item {
+                    Text(
+                        text = "No tasks available",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        ),
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            items(taskslist) { (taskName, taskDescription) ->
+                val truncatedDescription = if (taskDescription.length > 10) {
+                    "${taskDescription.take(15)}..." // First 30 characters followed by ellipsis
+                } else {
+                    taskDescription
+                }
+                Card(
+                    shape = RoundedCornerShape(25.dp),
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        selectedtask=taskName to taskDescription
+                        showDialog=true    },
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = taskName,
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = truncatedDescription,
+                            style = TextStyle(
+                                fontSize = 14.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
+    }
+    if (showDialog && selectedtask != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+            title = {
+                Text(text = selectedtask?.first ?: "Task Details")
+            },
+            text = {
+                Text(
+                    text = selectedtask?.second ?: "No description available"
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false
+                totalTasks.value-=1}) {
+                    Text(text = "Close")
+                }
+            }
+        )
     }
 }
 data class BottomNavItem(

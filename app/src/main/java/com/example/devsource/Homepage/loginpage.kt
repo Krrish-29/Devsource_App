@@ -209,7 +209,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     }
 }
 @Composable
-fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>,aboutteamsmap: MutableState<Map<String, List<String>>>) {
+fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>,aboutteamsmap: MutableState<Map<String, List<String>>>, tasksmap:MutableState<Map<String, List<Pair<String, String>>>>,) {
     val database = FirebaseDatabase.getInstance()
     val membersref = database.getReference("Members")
     val hasNavigated = remember { mutableStateOf(false) }
@@ -228,17 +228,17 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                 }
                 membersMap.value = categorizedMembers
 
-                if (categorizedMembers.isNotEmpty()) {
-                    selectedCategory.value = categorizedMembers.keys.first()
-                    if (!hasNavigated.value) {
-                        hasNavigated.value = true
-                        navController.navigate("home") {
-                            popUpTo("fetchdata") {
-                                inclusive = true
-                            }
-                        }
-                    }
-                }
+//                if (categorizedMembers.isNotEmpty()) {
+//                    selectedCategory.value = categorizedMembers.keys.first()
+//                    if (!hasNavigated.value) {
+//                        hasNavigated.value = true
+//                        navController.navigate("home") {
+//                            popUpTo("fetchdata") {
+//                                inclusive = true
+//                            }
+//                        }
+//                    }
+//                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
@@ -264,17 +264,17 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                     }
                     aboutteamsmap.value = categorizedAbout.mapValues { listOf(it.value) }
 
-                if (categorizedAbout.isNotEmpty()) {
-                    selectedCategory.value = categorizedAbout.keys.first()
-                    if (!hasNavigated.value) {
-                        hasNavigated.value = true
-                        navController.navigate("home") {
-                            popUpTo("fetchdata") {
-                                inclusive = true
-                            }
-                        }
-                    }
-                }
+//                if (categorizedAbout.isNotEmpty()) {
+//                    selectedCategory.value = categorizedAbout.keys.first()
+//                    if (!hasNavigated.value) {
+//                        hasNavigated.value = true
+//                        navController.navigate("home") {
+//                            popUpTo("fetchdata") {
+//                                inclusive = true
+//                            }
+//                        }
+//                    }
+//                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
@@ -285,7 +285,50 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
             aboutref.removeEventListener(aboutlisterner)
         }
     }
-    if (aboutteamsmap.value.isEmpty()) {
+//    if (aboutteamsmap.value.isEmpty()) {
+//        LoadingScreen()
+//    }
+    val tasksref=database.getReference("Tasks")
+    DisposableEffect(Unit) {
+        val taskslistener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val categorizedtasks = mutableMapOf<String, MutableList<Pair<String, String>>>()
+                for (categorySnapshot in snapshot.children) {
+                    val category = categorySnapshot.key.orEmpty()
+                    val tasks  = mutableListOf<Pair<String, String>>()
+                    for (taskSnapshot in categorySnapshot.children) {
+                        val taskName = taskSnapshot.key.orEmpty()
+                        val taskDescription = taskSnapshot.getValue(String::class.java).orEmpty()
+                        tasks.add(taskName to taskDescription)
+                    }
+                    categorizedtasks[category]=tasks
+                }
+                tasksmap.value = categorizedtasks
+
+
+                if (categorizedtasks.isNotEmpty()) {
+                    selectedCategory.value = categorizedtasks.keys.first()
+                    if (!hasNavigated.value) {
+                        hasNavigated.value = true
+                        navController.navigate("home") {
+                            popUpTo("fetchdata") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Failed to read data: ${error.message}")
+            }
+        }
+        tasksref.addValueEventListener(taskslistener)
+        onDispose {
+            tasksref.removeEventListener(taskslistener)
+        }
+    }
+    if (tasksmap.value.isEmpty()) {
         LoadingScreen()
     }
 }
