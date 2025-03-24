@@ -2,6 +2,11 @@ package com.example.devsource.Homepage
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -686,95 +691,169 @@ fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>
     }
 }
 @Composable
-fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,selectedCategory: MutableState<String>,totalTasks: MutableState<Int>){
-    totalTasks.value=0
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedtask by remember { mutableStateOf<Pair<String, String>?>(null) }
+fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List<Pair<String, String>>>>, selectedCategory: MutableState<String>, totalTasks: MutableState<Int>) {
+    totalTasks.value = 0
+    var expandedTaskId by remember { mutableStateOf<String?>(null) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Tasks", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
+        Text(
+            text = "Tasks",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val taskslist = tasksmap.value[selectedCategory.value] ?: emptyList()
-            if (taskslist.isEmpty()) {
+            val tasksList = tasksmap.value[selectedCategory.value] ?: emptyList()
+
+            if (tasksList.isEmpty()) {
                 item {
-                    Text(
-                        text = "No tasks available",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        ),
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            items(taskslist) { (taskName, taskDescription) ->
-                val truncatedDescription = if (taskDescription.length > 10) {
-                    "${taskDescription.take(15)}..." // First 30 characters followed by ellipsis
-                } else {
-                    taskDescription
-                }
-                Card(
-                    shape = RoundedCornerShape(25.dp),
-                    modifier = Modifier.fillMaxWidth().clickable {
-                        selectedtask=taskName to taskDescription
-                        showDialog=true    },
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                ) {
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(16.dp)
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = taskName,
+                            text = "No tasks available for ${selectedCategory.value}",
                             style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 18.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = truncatedDescription,
-                            style = TextStyle(
-                                fontSize = 14.sp
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
-        }
-    }
 
-    if (showDialog && selectedtask != null) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            title = {
-                Text(text = selectedtask?.first ?: "Task Details")
-            },
-            text = {
-                Text(text = selectedtask?.second ?: "No description available")
-            },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false
-                }) {
-                    Text(text = "Close")
+            items(tasksList) { (taskName, taskDescription) ->
+                val isExpanded = expandedTaskId == taskName
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(
+                            animationSpec = spring(
+                                dampingRatio = 0.8f,
+                                stiffness = Spring.StiffnessMedium
+                            )
+                        )
+                        .clickable {
+                            expandedTaskId = if (isExpanded) null else taskName
+                        },
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row1(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Task icon based on team category
+                            val taskIcon = when {
+                                selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
+                                selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
+                                selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
+                                else -> Icons.Default.DateRange
+                            }
+
+                            val iconTint = when {
+                                selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+                                selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+                                selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        color = iconTint.copy(alpha = 0.1f),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .padding(8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = taskIcon,
+                                    contentDescription = null,
+                                    tint = iconTint,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = taskName,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                if (!isExpanded) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    val truncatedDescription = if (taskDescription.length > 80) {
+                                        "${taskDescription.take(80)}..."
+                                    } else {
+                                        taskDescription
+                                    }
+
+                                    Text(
+                                        text = truncatedDescription,
+                                        style = TextStyle(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        maxLines = 2
+                                    )
+                                }
+                            }
+
+                            Icon(
+                                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        if (isExpanded) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Divider()
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text(
+                                text = taskDescription,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    lineHeight = 24.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
-        )
+        }
     }
 }
 data class BottomNavItem(
