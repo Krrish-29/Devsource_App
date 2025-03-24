@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -735,8 +736,9 @@ fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List
                 }
             }
 
-            items(tasksList) { (taskName, taskDescription) ->
+            itemsIndexed(tasksList) { index, (taskName, taskDescription) ->
                 val isExpanded = expandedTaskId == taskName
+                val taskNumber = index + 1
 
                 Card(
                     shape = RoundedCornerShape(16.dp),
@@ -762,14 +764,6 @@ fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Task icon based on team category
-                            val taskIcon = when {
-                                selectedCategory.value.contains("Android", ignoreCase = true) -> Icons.Default.Android
-                                selectedCategory.value.contains("Web", ignoreCase = true) -> Icons.Default.Language
-                                selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
-                                else -> Icons.Default.DateRange
-                            }
-
                             val iconTint = when {
                                 selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
                                 selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
@@ -777,21 +771,23 @@ fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List
                                 else -> MaterialTheme.colorScheme.primary
                             }
 
+                            // Number circle instead of icon
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .background(
                                         color = iconTint.copy(alpha = 0.1f),
                                         shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .padding(8.dp),
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    imageVector = taskIcon,
-                                    contentDescription = null,
-                                    tint = iconTint,
-                                    modifier = Modifier.size(24.dp)
+                                Text(
+                                    text = taskNumber.toString(),
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    ),
+                                    color = iconTint
                                 )
                             }
 
