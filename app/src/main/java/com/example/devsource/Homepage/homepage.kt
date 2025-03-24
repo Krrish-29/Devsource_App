@@ -532,7 +532,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
                     .fillMaxWidth()
                     .padding(24.dp)
             ) {
-                // Title with accent background
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -635,6 +634,15 @@ private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
 
 @Composable
 fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>) {
+    val teamColor = when {
+        selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+        selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+        selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    val cardBackgroundColor = teamColor.copy(alpha = 0.05f)
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -667,7 +675,7 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+                            color = if (isSelected) iconTint.copy(alpha = 0.2f) else Color.Transparent,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable { selectedCategory.value = category }
@@ -689,7 +697,7 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                             text = category,
                             fontSize = 14.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            color = if (isSelected) iconTint else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             maxLines = 1,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
@@ -706,19 +714,6 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
             selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
             else -> Icons.Default.Person
         }
-        val iconTint = when {
-            selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
-            selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
-            selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
-            else -> MaterialTheme.colorScheme.onSurface
-        }
-
-        val cardBackgroundColor = when {
-            selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84).copy(alpha = 0.15f)
-            selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4).copy(alpha = 0.15f)
-            selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63).copy(alpha = 0.15f)
-            else -> MaterialTheme.colorScheme.surface
-        }
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -730,9 +725,9 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                     text = "Members",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = teamColor
                     ),
-                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
                 )
             }
@@ -742,36 +737,23 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                 Card(
                     shape = RoundedCornerShape(25.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    border = BorderStroke(1.dp, teamColor.copy(alpha = 0.5f))
                 ){
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(cardBackgroundColor)
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ){
-                        Row1(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        ){
-                            Icon(
-                                imageVector = teamIcon,
-                                contentDescription = "Team member icon",
-                                tint = iconTint,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = member,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        Text(
+                            text = member,
+                            style = TextStyle(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 18.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             }
@@ -782,9 +764,9 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                     text = "About ${selectedCategory.value} Team",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = teamColor
                     ),
-                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp, bottom = 8.dp),
@@ -797,7 +779,7 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, iconTint.copy(alpha = 0.5f))
+                    border = BorderStroke(1.dp, teamColor.copy(alpha = 0.5f))
                 ) {
                     Column(
                         modifier = Modifier
@@ -809,7 +791,7 @@ fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String
                         Icon(
                             imageVector = teamIcon,
                             contentDescription = "About icon",
-                            tint = iconTint,
+                            tint = teamColor,
                             modifier = Modifier
                                 .size(48.dp)
                                 .padding(bottom = 12.dp)
