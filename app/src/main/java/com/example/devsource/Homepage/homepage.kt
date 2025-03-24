@@ -140,7 +140,6 @@ fun HomePage(
     var showDialog_termsandcondition by remember { mutableStateOf(false) }
     val annotatedString = buildAnnotatedString {
         append("")
-        // Add a clickable link
         pushStringAnnotation(
             tag = "URL",
             annotation = "https://www.example.com"
@@ -514,7 +513,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // DevSource Club Info Card
         Card(
             shape = RoundedCornerShape(20.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
@@ -554,7 +552,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Club description
                 Text(
                     text = "Welcome to DevSource Club, a thriving community of developers under the USIC&T ACM Student Chapter. Our mission is to skill up our members and provide them with exposure to diverse development domains, including web development, game development, app development, and open-source collaboration.",
                     style = TextStyle(
@@ -566,7 +563,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Development areas
                 Row1(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -894,7 +890,6 @@ fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List
                                 else -> MaterialTheme.colorScheme.primary
                             }
 
-                            // Number circle instead of icon
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
