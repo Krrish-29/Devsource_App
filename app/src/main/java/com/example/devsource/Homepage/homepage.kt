@@ -2,6 +2,11 @@ package com.example.devsource.Homepage
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
@@ -134,7 +140,6 @@ fun HomePage(
     var showDialog_termsandcondition by remember { mutableStateOf(false) }
     val annotatedString = buildAnnotatedString {
         append("")
-        // Add a clickable link
         pushStringAnnotation(
             tag = "URL",
             annotation = "https://www.example.com"
@@ -496,25 +501,144 @@ fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, aut
     }
 }
 @Composable
-fun Home(modifier: Modifier=Modifier,authViewModel: AuthViewModel,navController: NavController){
+fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController) {
     val context = LocalContext.current
+
     Column(
-        modifier=modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Text(text="Home")
-        TextButton(onClick={
-            authViewModel.signOut(context)
-            navController.navigate("login")
-        }){
-            Text(text="Sign Out")
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = 0.8f,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "About DevSource Club",
+                        style = TextStyle(
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Welcome to DevSource Club, a thriving community of developers under the USIC&T ACM Student Chapter. Our mission is to skill up our members and provide them with exposure to diverse development domains, including web development, game development, app development, and open-source collaboration.",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row1(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DomainBadge(
+                        icon = Icons.Default.Android,
+                        label = "Android",
+                        color = Color(0xFF3DDC84)
+                    )
+
+                    DomainBadge(
+                        icon = Icons.Default.Language,
+                        label = "Web",
+                        color = Color(0xFF4285F4)
+                    )
+
+                    DomainBadge(
+                        icon = Icons.Default.SportsEsports,
+                        label = "Game",
+                        color = Color(0xFFE91E63)
+                    )
+                }
+            }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+
     }
 }
 
 @Composable
-fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>,membersMap: MutableState<Map<String, List<String>>>,aboutmap: MutableState<Map<String, List<String>>>) {
+private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(52.dp)
+                .background(
+                    color = color.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = color,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+fun Members(modifier: Modifier = Modifier, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>) {
+    val teamColor = when {
+        selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+        selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+        selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    val cardBackgroundColor = teamColor.copy(alpha = 0.05f)
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
@@ -547,7 +671,7 @@ fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>
                     modifier = Modifier
                         .weight(1f)
                         .background(
-                            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else Color.Transparent,
+                            color = if (isSelected) iconTint.copy(alpha = 0.2f) else Color.Transparent,
                             shape = RoundedCornerShape(12.dp)
                         )
                         .clickable { selectedCategory.value = category }
@@ -569,7 +693,7 @@ fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>
                             text = category,
                             fontSize = 14.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                            color = if (isSelected) iconTint else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                             maxLines = 1,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
@@ -586,195 +710,264 @@ fun Members(modifier: Modifier = Modifier,selectedCategory: MutableState<String>
             selectedCategory.value.contains("Game", ignoreCase = true) -> Icons.Default.SportsEsports
             else -> Icons.Default.Person
         }
-        val iconTint = when {
-            selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
-            selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
-            selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
-            else -> MaterialTheme.colorScheme.onSurface
-        }
+
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val about = aboutmap.value[selectedCategory.value]?.joinToString(separator = "\n") ?: "No information available."
-            item {
-                Text(
-                    text = "About",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
-            }
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row1(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = about,
-                            style = TextStyle(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 18.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-            }
             item {
                 Text(
                     text = "Members",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = teamColor
                     ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
                 )
             }
+
             val members = membersMap.value[selectedCategory.value] ?: emptyList()
             items(members) { member ->
                 Card(
                     shape = RoundedCornerShape(25.dp),
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    border = BorderStroke(1.dp, teamColor.copy(alpha = 0.5f))
                 ){
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(cardBackgroundColor)
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ){
-                        Row1(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        ){
-                            Icon(
-                                imageVector = teamIcon,
-                                contentDescription = "Team member icon",
-                                tint = iconTint,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                                Text(
-                                text = member,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-@Composable
-fun Tasks(modifier: Modifier = Modifier,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,selectedCategory: MutableState<String>,totalTasks: MutableState<Int>){
-    totalTasks.value=0
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedtask by remember { mutableStateOf<Pair<String, String>?>(null) }
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Tasks", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp))
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            val taskslist = tasksmap.value[selectedCategory.value] ?: emptyList()
-            if (taskslist.isEmpty()) {
-                item {
-                    Text(
-                        text = "No tasks available",
-                        style = TextStyle(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        ),
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            items(taskslist) { (taskName, taskDescription) ->
-                val truncatedDescription = if (taskDescription.length > 10) {
-                    "${taskDescription.take(15)}..." // First 30 characters followed by ellipsis
-                } else {
-                    taskDescription
-                }
-                Card(
-                    shape = RoundedCornerShape(25.dp),
-                    modifier = Modifier.fillMaxWidth().clickable {
-                        selectedtask=taskName to taskDescription
-                        showDialog=true    },
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(16.dp)
-                    ) {
                         Text(
-                            text = taskName,
+                            text = member,
                             style = TextStyle(
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 18.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "About ${selectedCategory.value} Team",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = teamColor
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 8.dp),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+
+            item {
+                val about = aboutmap.value[selectedCategory.value]?.joinToString(separator = "\n") ?: "No information available."
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, teamColor.copy(alpha = 0.5f))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(cardBackgroundColor)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = teamIcon,
+                            contentDescription = "About icon",
+                            tint = teamColor,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(bottom = 12.dp)
+                        )
+
                         Text(
-                            text = truncatedDescription,
+                            text = about,
                             style = TextStyle(
-                                fontSize = 14.sp
+                                fontSize = 16.sp,
+                                lineHeight = 24.sp,
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
+}
+@Composable
+fun Tasks(modifier: Modifier = Modifier, tasksmap: MutableState<Map<String, List<Pair<String, String>>>>, selectedCategory: MutableState<String>, totalTasks: MutableState<Int>) {
+    totalTasks.value = 0
+    var expandedTaskId by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Tasks",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            val tasksList = tasksmap.value[selectedCategory.value] ?: emptyList()
+
+            if (tasksList.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No tasks available for ${selectedCategory.value}",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
                             ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
-        }
-    }
 
-    if (showDialog && selectedtask != null) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            title = {
-                Text(text = selectedtask?.first ?: "Task Details")
-            },
-            text = {
-                Text(text = selectedtask?.second ?: "No description available")
-            },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false
-                }) {
-                    Text(text = "Close")
+            itemsIndexed(tasksList) { index, (taskName, taskDescription) ->
+                val isExpanded = expandedTaskId == taskName
+                val taskNumber = index + 1
+
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(
+                            animationSpec = spring(
+                                dampingRatio = 0.8f,
+                                stiffness = Spring.StiffnessMedium
+                            )
+                        )
+                        .clickable {
+                            expandedTaskId = if (isExpanded) null else taskName
+                        },
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row1(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val iconTint = when {
+                                selectedCategory.value.contains("Android", ignoreCase = true) -> Color(0xFF3DDC84)
+                                selectedCategory.value.contains("Web", ignoreCase = true) -> Color(0xFF4285F4)
+                                selectedCategory.value.contains("Game", ignoreCase = true) -> Color(0xFFE91E63)
+                                else -> MaterialTheme.colorScheme.primary
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        color = iconTint.copy(alpha = 0.1f),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = taskNumber.toString(),
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    ),
+                                    color = iconTint
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = taskName,
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+                                if (!isExpanded) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    val truncatedDescription = if (taskDescription.length > 80) {
+                                        "${taskDescription.take(80)}..."
+                                    } else {
+                                        taskDescription
+                                    }
+
+                                    Text(
+                                        text = truncatedDescription,
+                                        style = TextStyle(
+                                            fontSize = 14.sp
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        maxLines = 2
+                                    )
+                                }
+                            }
+
+                            Icon(
+                                imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                contentDescription = if (isExpanded) "Collapse" else "Expand",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        if (isExpanded) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Divider()
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text(
+                                text = taskDescription,
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    lineHeight = 24.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
-        )
+        }
     }
 }
 data class BottomNavItem(
