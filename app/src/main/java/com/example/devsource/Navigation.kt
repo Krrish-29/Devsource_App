@@ -29,7 +29,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val useremailfordisplay=remember { mutableStateOf("") }
     NavHost(
         navController = navController,
-        startDestination = "welcome"
+        startDestination = "otp-page"
     ) {
         composable(
             route = "home",
