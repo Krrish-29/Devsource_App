@@ -125,6 +125,7 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
             shape = RoundedCornerShape(23.dp),
             singleLine = true,
             value = confirmpassword,
+            visualTransformation = PasswordVisualTransformation(),
             onValueChange = { confirmpassword = it },
             label = { Text(text = "Confirm Password") }
         )
