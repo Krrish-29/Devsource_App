@@ -6,6 +6,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,13 +32,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -43,116 +52,208 @@ import com.example.devsource.R
 
 @Composable
 fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Card(
-            shape = RoundedCornerShape(20.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        // Animated background gradients
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = 0.8f,
-                        stiffness = Spring.StiffnessMedium
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF0A0A0F),
+                            Color(0xFF121218)
+                        )
                     )
                 )
+        )
+
+        // Blurred neon orbs in background
+        Box(
+            modifier = Modifier
+                .size(250.dp)
+                .offset(x = (-80).dp, y = 100.dp)
+                .alpha(0.15f)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF00E5FF), Color.Transparent),
+                        radius = 250f
+                    )
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .offset(x = 180.dp, y = 400.dp)
+                .alpha(0.12f)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFFFF00E5), Color.Transparent),
+                        radius = 180f
+                    )
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .size(220.dp)
+                .offset(x = 120.dp, y = 150.dp)
+                .alpha(0.08f)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF00FF85), Color.Transparent),
+                        radius = 220f
+                    )
+                )
+        )
+
+        // Content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Column(
+            // DevSource Club Card
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF00E5FF).copy(alpha = 0.7f),
+                            Color(0xFFFF00E5).copy(alpha = 0.7f),
+                            Color(0xFF00FF85).copy(alpha = 0.7f)
+                        )
+                    )
+                )
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            RoundedCornerShape(12.dp)
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF1A1A22).copy(alpha = 0.9f),
+                                    Color(0xFF15151D).copy(alpha = 0.85f)
+                                )
+                            )
                         )
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "About DevSource Club",
-                        style = TextStyle(
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = "Welcome to DevSource Club, " +
-                            "a thriving community of developers under the " +
-                            "USIC&T ACM Student Chapter. Our mission is to skill up " +
-                            "our members and provide them with exposure to diverse development domains, " +
-                            "including web development, game development, app development, and open-source collaboration.",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.grp2),
-                        contentDescription = "DevSource Team Photo",
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                }
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Logo with glow
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .background(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
+                                            Color(0xFF00E5FF).copy(alpha = 0.2f),
+                                            Color.Transparent
+                                        ),
+                                        radius = 120f
+                                    ),
+                                    shape = RoundedCornerShape(60.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.logo2),
+                                contentDescription = "DevSource Logo",
+                                modifier = Modifier.size(100.dp),
+                                colorFilter = ColorFilter.tint(
+                                    Color.White.copy(alpha = 0.9f),
+                                    blendMode = BlendMode.SrcAtop
+                                )
+                            )
+                        }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    DomainBadge(
-                        icon = Icons.Default.Android,
-                        label = "Android",
-                        color = Color(0xFF3DDC84)
-                    )
+                        // Title with gradient
+                        Text(
+                            text = "DevSource Club",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            style = TextStyle(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFF00E5FF),
+                                        Color(0xFFFF00E5),
+                                        Color(0xFF00FF85)
+                                    )
+                                )
+                            )
+                        )
 
-                    DomainBadge(
-                        icon = Icons.Default.Language,
-                        label = "Web",
-                        color = Color(0xFF4285F4)
-                    )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    DomainBadge(
-                        icon = Icons.Default.SportsEsports,
-                        label = "Game",
-                        color = Color(0xFFE91E63)
-                    )
+                        // Description with soft glow
+                        Text(
+                            text = "A community of innovative developers building the future of technology",
+                            fontSize = 16.sp,
+                            color = Color.White.copy(alpha = 0.8f),
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Glowing button
+                        Button(
+                            onClick = { /* Handle action */ },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .height(50.dp)
+                                .border(
+                                    width = 1.dp,
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF00E5FF),
+                                            Color(0xFFFF00E5),
+                                            Color(0xFF00FF85)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(25.dp)
+                                )
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF00E5FF).copy(alpha = 0.2f),
+                                            Color(0xFFFF00E5).copy(alpha = 0.2f),
+                                            Color(0xFF00FF85).copy(alpha = 0.2f)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(25.dp)
+                                )
+                        ) {
+                            Text(
+                                text = "Explore",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
                 }
             }
+
+            // Additional content can be added here
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-
     }
 }
 @Composable
