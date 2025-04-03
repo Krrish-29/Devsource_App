@@ -16,3 +16,4 @@ local.properties
 google-services.json
 GoogleSignIn.kt
 GithubLoginPage.kt
+/app/email.json

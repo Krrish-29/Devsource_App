@@ -1,21 +1,20 @@
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.devsource.Homepage.AuthViewModel
-import com.example.devsource.Homepage.Fetchdata
-import com.example.devsource.Homepage.HomePage
-import com.example.devsource.Homepage.LoginPage
-import com.example.devsource.Homepage.OtpPage
-import com.example.devsource.Homepage.SignUpPage
-import com.example.devsource.Homepage.WelcomePage
+import com.example.devsource.App.AuthViewModel
+import com.example.devsource.App.Fetchdata
+import com.example.devsource.App.ForgotPasswordScreen
+import com.example.devsource.App.HomePage
+import com.example.devsource.App.LoginPage
+import com.example.devsource.App.OtpPage
+import com.example.devsource.App.SignUpPage
+import com.example.devsource.App.WelcomePage
 
 @Composable
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
@@ -25,8 +24,9 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val aboutmap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val tasksmap = remember { mutableStateOf<Map<String, List<Pair<String, String>>>>(emptyMap()) }
-    val usernamefordisplay=remember { mutableStateOf("") }
-    val useremailfordisplay=remember { mutableStateOf("") }
+//    val usernamefordisplay=remember { mutableStateOf("") }
+    val useremail=remember { mutableStateOf("") }
+//    val userpassword=remember { mutableStateOf("") }
     NavHost(
         navController = navController,
         startDestination = "welcome"
@@ -54,7 +54,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,usernamefordisplay,useremailfordisplay,aboutmap,tasksmap)
+            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,aboutmap,tasksmap)
         }
         composable(
             route = "welcome",
@@ -107,7 +107,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            LoginPage(modifier, navController, authViewModel)
+            LoginPage(modifier, navController, authViewModel,useremail)
         }
 
         composable(
@@ -136,7 +136,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                 )
             }
         ) {
-            SignUpPage(modifier, navController, authViewModel)
+            SignUpPage(modifier, navController, authViewModel,useremail)
         }
         composable(
             route = "otp-page",
@@ -163,7 +163,34 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            OtpPage(modifier, navController,authViewModel)
+            OtpPage(modifier, navController,authViewModel,useremail)
+        }
+        composable(
+            route = "email-input-for-otp",
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(animationDuration)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(animationDuration)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(animationDuration))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(animationDuration))
+            }
+        ) {
+            ForgotPasswordScreen(navController)
         }
         composable(
             route="fetchdata"

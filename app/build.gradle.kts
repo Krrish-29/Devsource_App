@@ -43,7 +43,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -75,4 +74,9 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.material3)
     implementation(libs.androidx.compose.material3.material3)
+//    implementation("com.google.android.gms:play-services-auth:21.4.0")
+//    implementation("com.google.api-client:google-api-client-android:1.34.0")
+//    implementation("com.google.apis:google-api-services-gmail:v1-rev20230110-1.34.0")
+//    implementation("com.google.auth:google-auth-library-oauth2-http:1.22.1")
+
 }
