@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.devsource.App.AuthViewModel
 import com.example.devsource.App.Fetchdata
 import com.example.devsource.App.ForgotPasswordScreen
 import com.example.devsource.App.HomePage
@@ -15,6 +14,7 @@ import com.example.devsource.App.LoginPage
 import com.example.devsource.App.OtpPage
 import com.example.devsource.App.SignUpPage
 import com.example.devsource.App.WelcomePage
+import com.example.devsource.Homepage.AuthViewModel
 
 @Composable
 fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
