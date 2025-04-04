@@ -1,13 +1,21 @@
 package com.example.devsource.App
 
 import android.util.Log
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.ColorFilter
-import com.example.devsource.R
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,21 +25,38 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,7 +65,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.devsource.Homepage.AuthState
 import com.example.devsource.Homepage.AuthViewModel
-import com.google.firebase.database.*
+import com.example.devsource.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 @Composable
 fun Home(
@@ -82,7 +111,8 @@ fun Home(
                     val title = newsSnapshot.child("title").getValue(String::class.java) ?: ""
                     val content = newsSnapshot.child("content").getValue(String::class.java) ?: ""
                     val timestamp = newsSnapshot.child("timestamp").getValue(String::class.java) ?: ""
-                    newsList.add(NewsItem(title, content, timestamp))
+                    val category = newsSnapshot.child("category").getValue(String::class.java) ?: "General"
+                    newsList.add(NewsItem(title, content, timestamp, category))
                 }
                 newsItems = newsList
                 isLoading = false
@@ -224,11 +254,15 @@ fun Home(
             item {
                 Text(
                     text = "Our Focus Areas",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = secondaryColor
                     ),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
                 )
 
                 LazyRow(
@@ -246,11 +280,13 @@ fun Home(
             item {
                 Text(
                     text = "Weekly News",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = primaryColor
                     ),
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                 )
             }
 
@@ -316,81 +352,153 @@ fun NewsCard(
     accentColor: Color = MaterialTheme.colorScheme.primaryContainer
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val darkCardBackground = Color(0xFF252525)
+    val cardBackground = Color(0xFF1A1A1A)
+
+    var isTextTruncated by remember { mutableStateOf(false) }
+
+    val (icon, iconColor) = when {
+        newsItem.category.contains("Android", ignoreCase = true) ->
+            Pair(Icons.Default.Android, Color(0xFF3DDC84))
+        newsItem.category.contains("Web", ignoreCase = true) ->
+            Pair(Icons.Default.Language, Color(0xFF4285F4))
+        newsItem.category.contains("Game", ignoreCase = true) ->
+            Pair(Icons.Default.SportsEsports, Color(0xFFE91E63))
+        newsItem.category.contains("DevOps", ignoreCase = true) ->
+            Pair(Icons.Default.Groups, Color(0xFFFF9800))
+        newsItem.category.contains("AI", ignoreCase = true) ||
+        newsItem.category.contains("ML", ignoreCase = true) ->
+            Pair(Icons.Default.Science, Color(0xFFFFEB3B))
+        else -> Pair(Icons.Default.Code, primaryColor)
+    }
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = darkCardBackground
-        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = cardBackground),
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize()
+            .shadow(
+                elevation = 6.dp,
+                spotColor = tertiaryColor.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = newsItem.title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = primaryColor
-                    ),
-                    modifier = Modifier.weight(1f)
-                )
-
-                Card(
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF121212)
-                    ),
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text(
-                        text = newsItem.date,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = secondaryColor,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.1f),
+                            cardBackground
+                        )
                     )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = newsItem.content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.8f),
-                maxLines = if (expanded) Int.MAX_VALUE else 3,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = tertiaryColor
                 )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
             ) {
-                Text(
-                    if (expanded) "Show Less" else "Read More",
-                    fontWeight = FontWeight.Bold
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(28.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Text(
+                        text = newsItem.title,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = iconColor.copy(alpha = 0.15f)
+                        ),
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(
+                            text = newsItem.date,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = iconColor,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    iconColor.copy(alpha = 0.5f),
+                                    secondaryColor.copy(alpha = 0.3f),
+                                    Color.Transparent
+                                )
+                            )
+                        )
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = newsItem.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.8f),
+                    maxLines = if (expanded) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 24.sp,
+                    onTextLayout = { result ->
+                        isTextTruncated = result.hasVisualOverflow
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (isTextTruncated || expanded) {
+                    TextButton(
+                        onClick = { expanded = !expanded },
+                        modifier = Modifier.align(Alignment.End),
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = iconColor
+                        )
+                    ) {
+                        Text(
+                            if (expanded) "Show Less" else "Read More",
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Icon(
+                            imageVector = if (expanded)
+                                Icons.Default.KeyboardArrowUp else
+                                Icons.Default.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
             }
         }
     }
 }
-
 @Composable
 private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
     // Assign specific colors based on domain type
@@ -449,5 +557,6 @@ private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
 data class NewsItem(
     val title: String,
     val content: String,
-    val date: String
+    val date: String,
+    val category: String = "General"
 )
