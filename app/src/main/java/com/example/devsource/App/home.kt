@@ -82,20 +82,17 @@ fun Home(
     var newsItems by remember { mutableStateOf<List<NewsItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Use theme colors instead of hardcoded values
     val colorScheme = MaterialTheme.colorScheme
 
-    // Using theme colors
+
     val primaryColor = colorScheme.primary
     val secondaryColor = colorScheme.secondary
     val tertiaryColor = colorScheme.tertiary
     val primaryContainerColor = colorScheme.primaryContainer
     val secondaryContainerColor = colorScheme.secondaryContainer
 
-    // Dark card background
     val darkCardBackground = Color(0xFF252525)
 
-    // Text colors
     val primaryText = Color.White
     val secondaryText = Color.White.copy(alpha = 0.7f)
     val tertiaryText = Color.White.copy(alpha = 0.5f)
@@ -172,28 +169,18 @@ fun Home(
                             .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.logo2),
+                            contentDescription = "DevSource Logo",
+                            modifier = Modifier
+                                .size(80.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        Brush.linearGradient(
-                                            colors = listOf(primaryColor, secondaryColor)
-                                        )
-                                    )
-                                    .padding(8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.logo2),
-                                    contentDescription = "DevSource Logo",
-                                    colorFilter = ColorFilter.tint(Color.White)
-                                )
-                            }
 
                             Spacer(modifier = Modifier.width(16.dp))
 
@@ -228,9 +215,19 @@ fun Home(
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.grp2),
+                            contentDescription = "Developer Group",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+
 
                         Button(
-                            onClick = { },
+                            onClick = { }, // kardio bhai pls , click karne pe members tab pe jayega
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
@@ -252,18 +249,40 @@ fun Home(
             }
 
             item {
-                Text(
-                    text = "Our Focus Areas",
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = secondaryColor
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Our Focus Areas",
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = secondaryColor
+                        ),
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(3.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        secondaryColor,
+                                        secondaryColor,
+                                        Color.Transparent
+                                    )
+                                ),
+                                shape = RoundedCornerShape(1.dp)
+                            )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -278,16 +297,40 @@ fun Home(
             }
 
             item {
-                Text(
-                    text = "Weekly News",
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = primaryColor
-                    ),
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Weekly News",
+                        fontSize = 24.sp,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = secondaryColor
+                        ),
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .width(120.dp)
+                            .height(3.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        secondaryColor,
+                                        secondaryColor,
+                                        Color.Transparent
+                                    )
+                                ),
+                                shape = RoundedCornerShape(1.dp)
+                            )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
 
             if (isLoading) {
@@ -353,7 +396,6 @@ fun NewsCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val cardBackground = Color(0xFF1A1A1A)
-
     var isTextTruncated by remember { mutableStateOf(false) }
 
     val (icon, iconColor) = when {
@@ -380,7 +422,7 @@ fun NewsCard(
             .animateContentSize()
             .shadow(
                 elevation = 6.dp,
-                spotColor = tertiaryColor.copy(alpha = 0.3f),
+                spotColor = iconColor.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(20.dp)
             )
     ) {
@@ -388,11 +430,13 @@ fun NewsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = Brush.verticalGradient(
+                    brush = Brush.linearGradient(
                         colors = listOf(
-                            primaryColor.copy(alpha = 0.1f),
-                            cardBackground
-                        )
+                            iconColor.copy(alpha = 0.15f),
+                            cardBackground.copy(alpha = 0.98f)
+                        ),
+                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                        end = androidx.compose.ui.geometry.Offset(0f, 800f)
                     )
                 )
         ) {
@@ -438,6 +482,7 @@ fun NewsCard(
                         )
                     }
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Box(
@@ -448,7 +493,7 @@ fun NewsCard(
                             brush = Brush.horizontalGradient(
                                 colors = listOf(
                                     iconColor.copy(alpha = 0.5f),
-                                    secondaryColor.copy(alpha = 0.3f),
+                                    iconColor.copy(alpha = 0.2f),
                                     Color.Transparent
                                 )
                             )
@@ -501,7 +546,6 @@ fun NewsCard(
 }
 @Composable
 private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
-    // Assign specific colors based on domain type
     val badgeColor = when (label) {
         "Android Dev" -> Color(0xFF3DDC84)  // Android green
         "Web Dev" -> Color(0xFF4285F4)      // Web blue
@@ -512,44 +556,73 @@ private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
     }
 
     Card(
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF252525)
+            containerColor = Color(0xFF1D1D1D)
         ),
-        modifier = Modifier.width(110.dp)
+        modifier = Modifier
+            .width(130.dp)
+            .shadow(
+                elevation = 8.dp,
+                spotColor = badgeColor.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp)
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 12.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(60.dp)
-                    .background(
-                        color = Color(0xFF101010),
-                        shape = RoundedCornerShape(12.dp)
+                    .size(70.dp)
+                    .shadow(
+                        elevation = 6.dp,
+                        shape = CircleShape,
+                        spotColor = badgeColor.copy(alpha = 0.5f)
                     )
-                    .padding(12.dp),
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                badgeColor.copy(alpha = 0.2f),
+                                Color(0xFF151515)
+                            )
+                        ),
+                        shape = CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
                     tint = badgeColor,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(36.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = label,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = badgeColor,
-                textAlign = TextAlign.Center
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = badgeColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = label,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = badgeColor,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
