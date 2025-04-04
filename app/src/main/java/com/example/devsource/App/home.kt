@@ -55,7 +55,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // Animated background gradients
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,7 +68,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
                 )
         )
 
-        // Blurred neon orbs in background
         Box(
             modifier = Modifier
                 .size(250.dp)
@@ -109,7 +107,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
                 )
         )
 
-        // Content
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,7 +114,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // DevSource Club Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,7 +148,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Logo with glow
                         Box(
                             modifier = Modifier
                                 .size(120.dp)
@@ -181,7 +176,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Title with gradient
                         Text(
                             text = "DevSource Club",
                             fontSize = 28.sp,
@@ -199,7 +193,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Description with soft glow
                         Text(
                             text = "A community of innovative developers building the future of technology",
                             fontSize = 16.sp,
@@ -210,9 +203,8 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // Glowing button
                         Button(
-                            onClick = { /* Handle action */ },
+                            onClick = {  },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent
                             ),
@@ -252,7 +244,6 @@ fun Home(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navControl
                 }
             }
 
-            // Additional content can be added here
         }
     }
 }
