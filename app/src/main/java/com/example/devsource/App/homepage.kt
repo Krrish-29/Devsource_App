@@ -2,6 +2,7 @@ package com.example.devsource.App
 
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerValue
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -59,10 +61,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -70,7 +74,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Row as Row1
 import androidx.core.net.toUri
-
+import com.google.firebase.auth.FirebaseAuth
+import coil.compose.AsyncImage
+import org.w3c.dom.Text
 
 
 @Composable
@@ -97,21 +103,14 @@ fun HomePage(
         BottomNavItem("Task", Icons.Default.DateRange,totalTasks.intValue)
     )
     val context = LocalContext.current
-    val topNavItemList=listOf(
-        TopNavItem("Menu", Icons.Filled.Menu),
-        TopNavItem("More", Icons.Filled.MoreVert),
-    )
-    var selectedIndexforbottomnav by remember {
-        mutableIntStateOf(0)
-    }
-    var selectedIndexfortopnav by remember {
-        mutableIntStateOf(3)
-    }
+    var selectedIndexforbottomnav by remember { mutableIntStateOf(0) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var showdialogAboutus by remember { mutableStateOf(false) }
     var showdialogTermsandcondition by remember { mutableStateOf(false)}
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val photoUrl = auth.currentUser?.photoUrl?.toString()
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -120,33 +119,52 @@ fun HomePage(
                 drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
             ) {
                 Spacer(Modifier.height(16.dp))
-                Box(
+                Row1(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    contentAlignment = Alignment.TopStart
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "usernamefordisplay.value",
-                        style = MaterialTheme.typography.headlineMedium,
+                        text = auth.currentUser?.displayName ?: "User",
+                        style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    if (photoUrl != null) {
+                        AsyncImage(
+                            model = photoUrl,
+                            contentDescription = "UserProfileImage",
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Image(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "DefaultUser",
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                        )
+                    }
                 }
                 Spacer(Modifier.height(8.dp))
-                Box(
+                Row1(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    contentAlignment = Alignment.Center
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "useremailfordisplay.value",
-                        style = MaterialTheme.typography.headlineMedium,
+                        text = auth.currentUser?.email?:"UserEmail.com",
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalDivider()
                 Spacer(Modifier.height(8.dp))
+
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
