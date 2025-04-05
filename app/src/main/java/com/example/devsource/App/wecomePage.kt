@@ -87,7 +87,7 @@ fun WelcomePage(modifier: Modifier = Modifier, navController: NavController,auth
                 }
             },
         ) {
-            Text(text = "Begin", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(text = "Begin", fontSize = 22.sp, fontWeight = FontWeight.Bold , color = Color.Black)
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
