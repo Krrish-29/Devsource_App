@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -48,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,7 +76,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
+import kotlinx.coroutines.launch
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
@@ -86,8 +88,10 @@ fun Home(
     var newsItems by remember { mutableStateOf<List<NewsItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
-    val colorScheme = MaterialTheme.colorScheme
+    val lazyColumnState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
+    val colorScheme = MaterialTheme.colorScheme
 
     val primaryColor = colorScheme.primary
     val secondaryColor = colorScheme.secondary
@@ -100,6 +104,12 @@ fun Home(
     val primaryText = Color.White
     val secondaryText = Color.White.copy(alpha = 0.7f)
     val tertiaryText = Color.White.copy(alpha = 0.5f)
+
+    val scrollToFocusAreas: () -> Unit = {
+        coroutineScope.launch {
+            lazyColumnState.animateScrollToItem(1)
+        }
+    }
 
     DisposableEffect(Unit) {
         val database = FirebaseDatabase.getInstance()
@@ -144,13 +154,12 @@ fun Home(
             .padding(10.dp)
     ) {
         LazyColumn(
+            state = lazyColumnState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
-
             item {
                 Card(
                     shape = RoundedCornerShape(24.dp),
@@ -178,7 +187,6 @@ fun Home(
                                 shape = RoundedCornerShape(24.dp)
                             )
                     ) {
-
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -316,7 +324,7 @@ fun Home(
                             Spacer(modifier = Modifier.height(24.dp))
 
                             Button(
-                                onClick = { },
+                                onClick = scrollToFocusAreas,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
@@ -329,19 +337,19 @@ fun Home(
                                     pressedElevation = 2.dp
                                 )
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Groups,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = Color.Black
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    "Explore Teams",
+                                    "Explore Below",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
                                         color = Color.Black
                                     )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Scroll Down",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = Color.Black
                                 )
                             }
                         }
