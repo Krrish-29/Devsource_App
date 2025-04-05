@@ -89,7 +89,9 @@ fun HomePage(
     selectedCategory: MutableState<String>,
     membersMap: MutableState<Map<String, List<String>>>,
     aboutmap: MutableState<Map<String, List<String>>>,
-    tasksmap: MutableState<Map<String, List<Pair<String, String>>>>
+    tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,
+    useremail:MutableState<String>,
+    username:MutableState<String>,
 ) {
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
@@ -128,7 +130,7 @@ fun HomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = auth.currentUser?.displayName ?: "User",
+                        text = auth.currentUser?.displayName ?: username.value,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -138,6 +140,7 @@ fun HomePage(
                             model = photoUrl,
                             contentDescription = "UserProfileImage",
                             modifier = Modifier
+                                .weight(1f)
                                 .size(48.dp)
                                 .clip(CircleShape)
                         )
@@ -159,7 +162,7 @@ fun HomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = auth.currentUser?.email?:"UserEmail.com",
+                        text = auth.currentUser?.email?:useremail.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.devsource.R
+import com.google.firebase.auth.oAuthProvider
 
 @Composable
 fun ForgotPasswordScreen(navController: NavController) {

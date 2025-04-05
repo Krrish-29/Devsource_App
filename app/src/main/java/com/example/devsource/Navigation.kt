@@ -24,9 +24,9 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val membersMap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val aboutmap = remember { mutableStateOf(mapOf<String, List<String>>()) }
     val tasksmap = remember { mutableStateOf<Map<String, List<Pair<String, String>>>>(emptyMap()) }
-//    val usernamefordisplay=remember { mutableStateOf("") }
-    val useremail=remember { mutableStateOf("") }
-//    val userpassword=remember { mutableStateOf("") }
+    val username=remember { mutableStateOf(String()) }
+    val useremail=remember { mutableStateOf(String()) }
+    val userpassword=remember { mutableStateOf(String()) }
     NavHost(
         navController = navController,
         startDestination = "welcome"
@@ -54,7 +54,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,aboutmap,tasksmap)
+            HomePage(modifier, navController, authViewModel,selectedCategory,membersMap,aboutmap,tasksmap,useremail,username)
         }
         composable(
             route = "welcome",
@@ -136,7 +136,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                 )
             }
         ) {
-            SignUpPage(modifier, navController, authViewModel,useremail)
+            SignUpPage(modifier, navController, authViewModel,useremail,username,userpassword)
         }
         composable(
             route = "otp-page",
@@ -163,7 +163,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            OtpPage(modifier, navController,authViewModel,useremail)
+            OtpPage(modifier, navController,authViewModel,useremail,username,userpassword)
         }
         composable(
             route = "email-input-for-otp",

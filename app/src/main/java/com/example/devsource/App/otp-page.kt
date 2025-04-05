@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
+import com.google.firebase.auth.oAuthProvider
 import java.security.SecureRandom
 
 @Composable
@@ -37,7 +38,9 @@ fun OtpPage(
     modifier: Modifier = Modifier,
     navController: NavController,
     authViewModel: AuthViewModel,
-    useremail: MutableState<String>
+    useremail: MutableState<String>,
+    name: MutableState<String>,
+    password: MutableState<String>
 ) {
 
     val context = LocalContext.current
@@ -206,8 +209,10 @@ fun OtpPage(
 
                     Button(
                         onClick = {
+//                            authViewModel.sendEmailVerification
                             if (otpValue.text == 111111.toString()) {
-                                navController.navigate("fetchdata")
+                                authViewModel.signup(name.toString(), useremail.toString(),password.toString())
+//                                    navController.navigate("fetchdata")
                             } else {
                                 Toast.makeText(context, "Please enter a valid 6-digit OTP", Toast.LENGTH_SHORT).show()
                             }

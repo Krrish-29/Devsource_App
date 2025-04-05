@@ -47,7 +47,7 @@ import com.example.devsource.R
 
 
 @Composable
-fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>){
+fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>,username:MutableState<String>,userpassword:MutableState<String>){
     val scrollState = rememberScrollState()
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -130,6 +130,8 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
 
         Button(onClick = {
             useremail.value=email
+            username.value=name
+            userpassword.value=confirmpassword
             navController.navigate("otp-page")
         }, enabled=authState.value!=AuthState.Loading && password==confirmpassword)  {
             Text(text="Create Account",fontSize = 18.sp, fontWeight = FontWeight.Bold)

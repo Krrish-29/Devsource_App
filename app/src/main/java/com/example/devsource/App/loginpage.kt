@@ -66,7 +66,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Authenticated -> {
-                navController.navigate("home")
+                navController.navigate("fetchdata")
             }
             is AuthState.Error -> Toast.makeText(context,(authState.value as AuthState.Error).message, Toast.LENGTH_LONG).show()
             else -> Unit
@@ -117,30 +117,31 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Button(
-                    onClick = { authViewModel.loginWithGithub(context) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(26.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.github),
-                            contentDescription = "Github",
-                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Login With Github",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
+//                Button(
+//                    onClick = { authViewModel.loginWithGithub(context) },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(26.dp)
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(8.dp),
+
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.github),
+//                            contentDescription = "Github",
+//                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
+//                        )
+//                        Spacer(modifier = Modifier.width(12.dp))
+//                        Text(
+//                            text = "Login With Github",
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 16.sp
+//                        )
+//                    }
+//                }
             }
-            Spacer(modifier = Modifier.height(15.dp))
+//            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "━━━━ Or Continue With Email ━━━━",
                 fontSize = 16.sp
