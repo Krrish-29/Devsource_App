@@ -33,8 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.devsource.Homepage.AuthState
-import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 
 //Beginning Page that users see at the start of the app

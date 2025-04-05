@@ -47,8 +47,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.devsource.Homepage.AuthState
-import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -88,63 +86,63 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                 painterResource(R.drawable.logo2),
                 contentDescription = "logo",
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 35.dp),
-            ) {
-                Button(
-                    onClick = { authViewModel.loginWithGoogle(context) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(26.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.google),
-                            contentDescription = "Google",
-                            modifier = Modifier.size(22.dp).background(color = Color.White, shape = RoundedCornerShape(20.dp))
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Login With Google",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                Button(
-                    onClick = { authViewModel.loginWithGithub(context) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(26.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.github),
-                            contentDescription = "Github",
-                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Login With Github",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(15.dp))
-            Text(
-                text = "━━━━ Or Continue With Email ━━━━",
-                fontSize = 16.sp
-            )
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 35.dp),
+//            ) {
+//                Button(
+//                    onClick = { authViewModel.loginWithGoogle(context) },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(26.dp),
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(8.dp),
+//                        verticalAlignment = Alignment.CenterVertically,
+//
+//                    ) {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.google),
+//                            contentDescription = "Google",
+//                            modifier = Modifier.size(22.dp).background(color = Color.White, shape = RoundedCornerShape(20.dp))
+//                        )
+//                        Spacer(modifier = Modifier.width(12.dp))
+//                        Text(
+//                            text = "Login With Google",
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    }
+//                }
+//                Spacer(modifier = Modifier.height(12.dp))
+//                Button(
+//                    onClick = { authViewModel.loginWithGithub(context) },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(26.dp)
+//                ) {
+//                    Row(
+//                        modifier = Modifier.padding(8.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Image(
+//                            painter = painterResource(id = R.drawable.github),
+//                            contentDescription = "Github",
+//                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
+//                        )
+//                        Spacer(modifier = Modifier.width(12.dp))
+//                        Text(
+//                            text = "Login With Github",
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 16.sp
+//                        )
+//                    }
+//                }
+//            }
+//            Spacer(modifier = Modifier.height(15.dp))
+//            Text(
+//                text = "━━━━ Or Continue With Email ━━━━",
+//                fontSize = 16.sp
+//            )
             Spacer(modifier = Modifier.height(15.dp))
             OutlinedTextField(
                 modifier = Modifier

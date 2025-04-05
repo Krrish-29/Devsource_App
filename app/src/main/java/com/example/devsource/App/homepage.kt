@@ -243,7 +243,7 @@ fun HomePage(
                     label = { Text("Sign Out") },
                     selected = false,
                     onClick = {
-                        authViewModel.signOut(context)
+                        authViewModel.signOut()
                         navController.navigate("login")
                     }
                 )
