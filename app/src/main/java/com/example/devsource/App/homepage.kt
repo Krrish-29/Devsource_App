@@ -75,7 +75,8 @@ import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Row as Row1
 import androidx.core.net.toUri
 import com.google.firebase.auth.FirebaseAuth
-import coil.compose.AsyncImage
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 import org.w3c.dom.Text
 
 
@@ -467,6 +468,11 @@ fun HomePage(
             ContentPages(modifier=Modifier.padding(innerpadding), selectedIndexforbottomnav, authViewModel, navController, selectedCategory, membersMap,aboutmap, tasksmap,totalTasks)
         }
     }
+}
+
+@Composable
+fun AsyncImage(model: String, contentDescription: String, modifier: Modifier) {
+    TODO("Not yet implemented")
 }
 
 @Composable
