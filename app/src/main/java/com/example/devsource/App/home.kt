@@ -2,6 +2,7 @@ package com.example.devsource.App
 
 import android.util.Log
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +14,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -47,15 +50,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,22 +77,22 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlin.math.absoluteValue
-
+import kotlinx.coroutines.launch
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     navController: NavController,
-    selectedIndexforbottomnav: MutableState<Int>
 ) {
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
     var newsItems by remember { mutableStateOf<List<NewsItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
-    val colorScheme = MaterialTheme.colorScheme
+    val lazyColumnState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
+    val colorScheme = MaterialTheme.colorScheme
 
     val primaryColor = colorScheme.primary
     val secondaryColor = colorScheme.secondary
@@ -99,6 +105,12 @@ fun Home(
     val primaryText = Color.White
     val secondaryText = Color.White.copy(alpha = 0.7f)
     val tertiaryText = Color.White.copy(alpha = 0.5f)
+
+    val scrollToFocusAreas: () -> Unit = {
+        coroutineScope.launch {
+            lazyColumnState.animateScrollToItem(1)
+        }
+    }
 
     DisposableEffect(Unit) {
         val database = FirebaseDatabase.getInstance()
@@ -143,109 +155,204 @@ fun Home(
             .padding(10.dp)
     ) {
         LazyColumn(
+            state = lazyColumnState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
-
             item {
                 Card(
                     shape = RoundedCornerShape(24.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = darkCardBackground
-                    ),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(24.dp),
-                            spotColor = tertiaryColor.copy(alpha = 0.3f)
-                        )
                 ) {
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(24.dp),
+                                spotColor = tertiaryColor.copy(alpha = 0.3f),
+                                clip = true
+                            )
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color(0xFF212121),
+                                        Color(0xFF121212)
+                                    )
+                                ),
+                                shape = RoundedCornerShape(24.dp)
+                            )
                     ) {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.logo2),
-                            contentDescription = "DevSource Logo",
+                        Column(
                             modifier = Modifier
-                                .size(80.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column(
-                                modifier = Modifier.weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = "Welcome to DevSource",
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = primaryText
+                            Box(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .shadow(
+                                        elevation = 8.dp,
+                                        shape = CircleShape,
+                                        spotColor = primaryColor.copy(alpha = 0.5f),
+                                        ambientColor = primaryColor.copy(alpha = 0.2f)
+                                    )
+                                    .background(
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                primaryColor.copy(alpha = 0.2f),
+                                                Color(0xFF151515)
+                                            )
+                                        ),
+                                        shape = CircleShape
                                     ),
-                                    textAlign = TextAlign.Center
-                                )
-                                Text(
-                                    text = "Explore, learn and build with us!",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = secondaryText,
-                                    textAlign = TextAlign.Center
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.logo2),
+                                    contentDescription = "DevSource Logo",
+                                    modifier = Modifier.size(80.dp),
+                                    colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.95f))
                                 )
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
 
-                        Text(
-                            text = "DevSource is a community of developers working together to build amazing projects. Join our teams and start creating!",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                            color = secondaryText
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.grp2),
-                            contentDescription = "Developer Group",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-
-                        Button(
-                            onClick = { selectedIndexforbottomnav.value = 1}, // kardio bhai pls , click karne pe members tab pe jayega
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = primaryColor
-                            )
-                        ) {
                             Text(
-                                "Explore Teams",
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                text = "Welcome to DevSource",
+                                style = MaterialTheme.typography.headlineSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.Black
-                                )
+                                    color = Color.White
+                                ),
+                                textAlign = TextAlign.Center
                             )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .width(120.dp)
+                                    .height(2.dp)
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                primaryColor.copy(alpha = 0.7f),
+                                                primaryColor.copy(alpha = 0.7f),
+                                                Color.Transparent
+                                            )
+                                        ),
+                                        shape = RoundedCornerShape(1.dp)
+                                    )
+                            )
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = "Explore, learn and build with us!",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White.copy(alpha = 0.7f),
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFF252525)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "DevSource is a community of developers working together to build amazing projects. Join our teams and start creating!",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Card(
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Black),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .shadow(
+                                        elevation = 6.dp,
+                                        shape = RoundedCornerShape(20.dp),
+                                        spotColor = tertiaryColor.copy(alpha = 0.3f),
+                                        clip = true
+                                    )
+                            ) {
+                                Box {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.grp2),
+                                        contentDescription = "Developer Group",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(180.dp)
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(180.dp)
+                                            .background(
+                                                Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        Color.Black.copy(alpha = 0.7f)
+                                                    ),
+                                                    startY = 180f * 0.5f
+                                                )
+                                            )
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Button(
+                                onClick = scrollToFocusAreas,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = primaryColor
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 2.dp
+                                )
+                            ) {
+                                Text(
+                                    "Explore Below",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Scroll Down",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = Color.Black
+                                )
+                            }
                         }
                     }
                 }
@@ -411,7 +518,7 @@ fun NewsCard(
         newsItem.category.contains("DevOps", ignoreCase = true) ->
             Pair(Icons.Default.Groups, Color(0xFFFF9800))
         newsItem.category.contains("AI", ignoreCase = true) ||
-        newsItem.category.contains("ML", ignoreCase = true) ->
+                newsItem.category.contains("ML", ignoreCase = true) ->
             Pair(Icons.Default.Science, Color(0xFFFFEB3B))
         else -> Pair(Icons.Default.Code, primaryColor)
     }

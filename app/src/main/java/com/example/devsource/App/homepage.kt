@@ -491,7 +491,7 @@ fun ClickableLink(label: String, url: String) {
 @Composable
 fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav: MutableState<Int>, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>, tasksmap: MutableState<Map<String, List<Pair<String, String>>>>, totalTasks:MutableState<Int>){
     when (selectedIndexforbottomnav.value){
-        0 -> Home(modifier, authViewModel, navController,selectedIndexforbottomnav)
+        0 -> Home(modifier, authViewModel, navController)
         1 -> Members(modifier, selectedCategory, membersMap, aboutmap)
         2 -> Tasks(modifier, tasksmap, selectedCategory,totalTasks)
     }
