@@ -53,6 +53,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>) {
@@ -86,63 +88,63 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                 painterResource(R.drawable.logo2),
                 contentDescription = "logo",
             )
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 35.dp),
-//            ) {
-//                Button(
-//                    onClick = { authViewModel.loginWithGoogle(context) },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(26.dp),
-//                ) {
-//                    Row(
-//                        modifier = Modifier.padding(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically,
-//
-//                    ) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.google),
-//                            contentDescription = "Google",
-//                            modifier = Modifier.size(22.dp).background(color = Color.White, shape = RoundedCornerShape(20.dp))
-//                        )
-//                        Spacer(modifier = Modifier.width(12.dp))
-//                        Text(
-//                            text = "Login With Google",
-//                            fontSize = 16.sp,
-//                            fontWeight = FontWeight.Bold
-//                        )
-//                    }
-//                }
-//                Spacer(modifier = Modifier.height(12.dp))
-//                Button(
-//                    onClick = { authViewModel.loginWithGithub(context) },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(26.dp)
-//                ) {
-//                    Row(
-//                        modifier = Modifier.padding(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.github),
-//                            contentDescription = "Github",
-//                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
-//                        )
-//                        Spacer(modifier = Modifier.width(12.dp))
-//                        Text(
-//                            text = "Login With Github",
-//                            fontWeight = FontWeight.Bold,
-//                            fontSize = 16.sp
-//                        )
-//                    }
-//                }
-//            }
-//            Spacer(modifier = Modifier.height(15.dp))
-//            Text(
-//                text = "━━━━ Or Continue With Email ━━━━",
-//                fontSize = 16.sp
-//            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 35.dp),
+            ) {
+                Button(
+                    onClick = { authViewModel.loginWithGoogle(context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(26.dp),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.google),
+                            contentDescription = "Google",
+                            modifier = Modifier.size(22.dp).background(color = Color.White, shape = RoundedCornerShape(20.dp))
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Login With Google",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = { authViewModel.loginWithGithub(context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(26.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.github),
+                            contentDescription = "Github",
+                            modifier = Modifier.size(22.dp).background(color = Color.White,shape = RoundedCornerShape(23.dp))
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Login With Github",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "━━━━ Or Continue With Email ━━━━",
+                fontSize = 16.sp
+            )
             Spacer(modifier = Modifier.height(15.dp))
             OutlinedTextField(
                 modifier = Modifier
@@ -226,17 +228,17 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                 }
                 membersMap.value = categorizedMembers
 
-//                if (categorizedMembers.isNotEmpty()) {
-//                    selectedCategory.value = categorizedMembers.keys.first()
-//                    if (!hasNavigated.value) {
-//                        hasNavigated.value = true
-//                        navController.navigate("home") {
-//                            popUpTo("fetchdata") {
-//                                inclusive = true
-//                            }
-//                        }
-//                    }
-//                }
+                if (categorizedMembers.isNotEmpty()) {
+                    selectedCategory.value = categorizedMembers.keys.first()
+                    if (!hasNavigated.value) {
+                        hasNavigated.value = true
+                        navController.navigate("home") {
+                            popUpTo("fetchdata") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
@@ -247,9 +249,6 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
             membersref.removeEventListener(memberslistener)
         }
     }
-//    if (membersMap.value.isEmpty()) {
-//        LoadingScreen()
-//    }
     val aboutref=database.getReference("About")
     DisposableEffect(Unit) {
         val aboutlisterner = object : ValueEventListener {
@@ -261,18 +260,6 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                         categorizedAbout[teamName] = description
                     }
                     aboutteamsmap.value = categorizedAbout.mapValues { listOf(it.value) }
-
-//                if (categorizedAbout.isNotEmpty()) {
-//                    selectedCategory.value = categorizedAbout.keys.first()
-//                    if (!hasNavigated.value) {
-//                        hasNavigated.value = true
-//                        navController.navigate("home") {
-//                            popUpTo("fetchdata") {
-//                                inclusive = true
-//                            }
-//                        }
-//                    }
-//                }
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
@@ -283,9 +270,6 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
             aboutref.removeEventListener(aboutlisterner)
         }
     }
-//    if (aboutteamsmap.value.isEmpty()) {
-//        LoadingScreen()
-//    }
     val tasksref=database.getReference("Tasks")
     DisposableEffect(Unit) {
         val taskslistener = object : ValueEventListener {
@@ -302,8 +286,6 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                     categorizedtasks[category]=tasks
                 }
                 tasksmap.value = categorizedtasks
-
-
                 if (categorizedtasks.isNotEmpty()) {
                     selectedCategory.value = categorizedtasks.keys.first()
                     if (!hasNavigated.value) {
@@ -316,7 +298,6 @@ fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selec
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e("FirebaseError", "Failed to read data: ${error.message}")
             }

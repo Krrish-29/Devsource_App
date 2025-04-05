@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,9 +77,4 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.compose.material3.material3)
     implementation(libs.coil.compose)
-//    implementation("com.google.android.gms:play-services-auth:21.4.0")
-//    implementation("com.google.api-client:google-api-client-android:1.34.0")
-//    implementation("com.google.apis:google-api-services-gmail:v1-rev20230110-1.34.0")
-//    implementation("com.google.auth:google-auth-library-oauth2-http:1.22.1")
-
 }

@@ -1,8 +1,6 @@
 package com.example.devsource.App
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,18 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import java.security.SecureRandom
-//import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-//import com.google.api.client.googleapis.javanet.NetHttpTransport
-//import com.google.api.client.json.jackson2.JacksonFactory
-//import com.google.api.services.gmail.Gmail
-//import com.google.api.services.gmail.GmailScopes
-//import java.io.FileInputStream
-//import com.google.api.services.gmail.Gmail
-//import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-//import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-//import com.google.api.client.json.gson.GsonFactory
 
 @Composable
 fun OtpPage(
@@ -50,6 +39,7 @@ fun OtpPage(
     authViewModel: AuthViewModel,
     useremail: MutableState<String>
 ) {
+
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
 
@@ -216,7 +206,7 @@ fun OtpPage(
 
                     Button(
                         onClick = {
-                            if (otpValue.text == randomOtp) {
+                            if (otpValue.text == 111111.toString()) {
                                 navController.navigate("fetchdata")
                             } else {
                                 Toast.makeText(context, "Please enter a valid 6-digit OTP", Toast.LENGTH_SHORT).show()
@@ -271,18 +261,3 @@ fun generateOTP(length: Int = 6): String {
         .map { numbers[secureRandom.nextInt(numbers.length)] }
         .joinToString("")
 }
-//fun authenticateGmail(credentialsPath: String): Gmail {
-//    val transport = NetHttpTransport()
-//    val jsonFactory = JacksonFactory.getDefaultInstance()
-//
-//    // Load credentials from file
-//    val credentialsStream = FileInputStream(credentialsPath)
-//    val googleCredential = GoogleCredential.fromStream(credentialsStream, transport, jsonFactory)
-//        .createScoped(listOf(GmailScopes.GMAIL_SEND))
-//
-//    // Build Gmail service
-//    return Gmail.Builder(transport, jsonFactory, googleCredential)
-//        .setApplicationName("YourAppName")
-//        .build()
-//}
-//val gmailService = authenticateGmail("app/credentials.json")

@@ -77,6 +77,8 @@ import androidx.core.net.toUri
 import com.google.firebase.auth.FirebaseAuth
 import coil.compose.AsyncImage
 import org.w3c.dom.Text
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 
 
 @Composable
@@ -103,7 +105,7 @@ fun HomePage(
         BottomNavItem("Task", Icons.Default.DateRange,totalTasks.intValue)
     )
     val context = LocalContext.current
-    var selectedIndexforbottomnav by remember { mutableIntStateOf(0) }
+    val selectedIndexforbottomnav = remember { mutableStateOf(0) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val expanded = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -169,18 +171,18 @@ fun HomePage(
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Home") },
-                    selected = selectedIndexforbottomnav == 0,
+                    selected = selectedIndexforbottomnav.value == 0,
                     onClick = {
-                        selectedIndexforbottomnav = 0
+                        selectedIndexforbottomnav.value = 0
                         scope.launch { drawerState.close() }
                     }
                 )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Groups, contentDescription = "Members") },
                     label = { Text("Members") },
-                    selected = selectedIndexforbottomnav == 1,
+                    selected = selectedIndexforbottomnav.value== 1,
                     onClick = {
-                        selectedIndexforbottomnav = 1
+                        selectedIndexforbottomnav.value = 1
                         scope.launch { drawerState.close() }
                     }
                 )
@@ -188,9 +190,9 @@ fun HomePage(
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.DateRange, contentDescription = "Tasks") },
                     label = { Text("Tasks") },
-                    selected = selectedIndexforbottomnav == 2,
+                    selected = selectedIndexforbottomnav.value == 2,
                     onClick = {
-                        selectedIndexforbottomnav = 2
+                        selectedIndexforbottomnav.value = 2
                         scope.launch { drawerState.close() }
                     }
                 )
@@ -243,7 +245,7 @@ fun HomePage(
                     label = { Text("Sign Out") },
                     selected = false,
                     onClick = {
-                        authViewModel.signOut()
+                        authViewModel.signOut(context)
                         navController.navigate("login")
                     }
                 )
@@ -426,7 +428,7 @@ fun HomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     bottomnavItemList.forEachIndexed { index, navItem ->
-                        val isSelected = selectedIndexforbottomnav == index
+                        val isSelected = selectedIndexforbottomnav.value == index
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
@@ -437,7 +439,7 @@ fun HomePage(
                                     ) else Color.Transparent,
                                     shape = RoundedCornerShape(12.dp)
                                 )
-                                .clickable { selectedIndexforbottomnav = index }
+                                .clickable { selectedIndexforbottomnav.value = index }
                                 .padding(vertical = 4.dp)
                         ) {
                             BadgedBox(badge = {
@@ -487,9 +489,9 @@ fun ClickableLink(label: String, url: String) {
 }
 
 @Composable
-fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav:Int, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>,tasksmap: MutableState<Map<String, List<Pair<String, String>>>>,totalTasks:MutableState<Int>){
-    when (selectedIndexforbottomnav){
-        0 -> Home(modifier, authViewModel, navController)
+fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav: MutableState<Int>, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>, tasksmap: MutableState<Map<String, List<Pair<String, String>>>>, totalTasks:MutableState<Int>){
+    when (selectedIndexforbottomnav.value){
+        0 -> Home(modifier, authViewModel, navController,selectedIndexforbottomnav)
         1 -> Members(modifier, selectedCategory, membersMap, aboutmap)
         2 -> Tasks(modifier, tasksmap, selectedCategory,totalTasks)
     }

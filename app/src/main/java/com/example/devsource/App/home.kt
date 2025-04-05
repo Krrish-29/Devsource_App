@@ -42,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -63,17 +64,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlin.math.absoluteValue
 
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     navController: NavController,
+    selectedIndexforbottomnav: MutableState<Int>
 ) {
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
@@ -225,7 +230,7 @@ fun Home(
 
 
                         Button(
-                            onClick = { }, // kardio bhai pls , click karne pe members tab pe jayega
+                            onClick = { selectedIndexforbottomnav.value = 1}, // kardio bhai pls , click karne pe members tab pe jayega
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
