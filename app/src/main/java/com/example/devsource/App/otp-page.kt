@@ -48,8 +48,8 @@ fun OtpPage(
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
 
-    var otpValue by remember { mutableStateOf(TextFieldValue("", TextRange(0))) }
-    val maxChar = 6
+//    var otpValue by remember { mutableStateOf(TextFieldValue("", TextRange(0))) }
+//    val maxChar = 6
 
     val neonOrange = Color(0xFFFF6B00)
     val brightOrange = Color(0xFFFF9D45)

@@ -190,7 +190,7 @@ fun Navigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
                     animationSpec = tween(animationDuration))
             }
         ) {
-            ForgotPasswordScreen(navController)
+            ForgotPasswordScreen(navController,authViewModel)
         }
         composable(
             route="fetchdata"

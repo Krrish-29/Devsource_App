@@ -25,11 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.auth.oAuthProvider
 
 @Composable
-fun ForgotPasswordScreen(navController: NavController) {
+fun ForgotPasswordScreen(navController: NavController,authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var isEmailValid by remember { mutableStateOf(true) }
     var isLoading by remember { mutableStateOf(false) }
@@ -194,12 +195,8 @@ fun ForgotPasswordScreen(navController: NavController) {
                                 isEmailValid = false
                             } else if (isEmailValid) {
                                 isLoading = true
-                                Toast.makeText(
-                                    context,
-                                    "Password reset link sent to $email",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                navController.navigate("otp-page")
+                                authViewModel.sendPasswordResetEmail(email, context)
+                                isLoading = false
                             }
                         },
                         modifier = Modifier
