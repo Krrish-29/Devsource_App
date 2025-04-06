@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
 import com.example.devsource.R
 import com.google.firebase.database.DataSnapshot
@@ -63,7 +64,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
-
+    val credentialManager = remember { CredentialManager.create(context) }
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Authenticated -> {
@@ -96,7 +97,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
                     .padding(horizontal = 35.dp),
             ) {
                 Button(
-                    onClick = { authViewModel.loginWithGoogle(context) },
+                    onClick = { authViewModel.googleLogin(context,credentialManager) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(26.dp),
                 ) {

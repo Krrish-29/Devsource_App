@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.Row as Row1
 import androidx.core.net.toUri
+import androidx.credentials.CredentialManager
 import com.google.firebase.auth.FirebaseAuth
 import coil.compose.AsyncImage
 import com.example.devsource.Homepage.AuthState
@@ -91,7 +92,8 @@ fun HomePage(
     username:MutableState<String>,
 ) {
     val authState = authViewModel.authState.observeAsState()
-
+    val context = LocalContext.current
+    val credentialManager = remember { CredentialManager.create(context) }
     LaunchedEffect(authState.value) {
         when (val state = authState.value) {
             is AuthState.Authenticated -> {
@@ -113,7 +115,6 @@ fun HomePage(
         BottomNavItem("Members", Icons.Default.Groups,0),
         BottomNavItem("Task", Icons.Default.DateRange,totalTasks.intValue)
     )
-    val context = LocalContext.current
     val selectedIndexforbottomnav = remember { mutableStateOf(0) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val expanded = remember { mutableStateOf(false) }
@@ -257,7 +258,7 @@ fun HomePage(
                     label = { Text("Sign Out") },
                     selected = false,
                     onClick = {
-                        authViewModel.signOut(context)
+                        authViewModel.signOut(context, credentialManager)
                         navController.navigate("login")
                     }
                 )
