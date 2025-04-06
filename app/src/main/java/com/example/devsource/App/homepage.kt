@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -97,6 +98,8 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.text.toDouble
+import kotlin.times
 import androidx.compose.foundation.layout.Row as Row1
 
 
@@ -148,278 +151,239 @@ fun HomePage(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(300.dp),
-                drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+                modifier = Modifier
+                    .width(300.dp)
+                    .background(
+                        color = Color(0xFF121212)
+                    ),
+                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+                drawerContainerColor = Color.Transparent
             ) {
-                Spacer(Modifier.height(16.dp))
-                Card(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            spotColor = Color.Black.copy(alpha = 0.4f),
-                            shape = RoundedCornerShape(24.dp)
-                        ),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF121212)
-                    )
+                        .height(200.dp)
+                        .background(Color(0xFF1A1A1A))
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFF1E1E1E),
-                                        Color(0xFF252525)
-                                    ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                                )
-                            )
-                            .padding(24.dp)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Box(
+                            modifier = Modifier
+                                .padding(bottom = 15.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            val interactionSource = remember { MutableInteractionSource() }
-                            val isPressed by interactionSource.collectIsPressedAsState()
-                            val scale by animateFloatAsState(
-                                targetValue = if (isPressed) 1.05f else 1f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow
-                                ),
-                                label = "avatarScale"
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .scale(scale)
-                                    .clickable(
-                                        interactionSource = interactionSource,
-                                        indication = null
-                                    ) { },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (photoUrl != null) {
-                                    AsyncImage(
-                                        model = photoUrl,
-                                        contentDescription = "User Profile",
-                                        modifier = Modifier
-                                            .size(90.dp)
-                                            .clip(CircleShape)
-                                            .border(
-                                                width = 3.dp,
-                                                brush = Brush.sweepGradient(
-                                                    colors = listOf(
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                                        Color(0xFF404040),
-                                                        Color(0xFF606060),
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                                                    )
-                                                ),
-                                                shape = CircleShape
-                                            )
-                                            .padding(3.dp)
-                                            .background(Color(0xFF1A1A1A), CircleShape)
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(90.dp)
-                                            .clip(CircleShape)
-                                            .border(
-                                                width = 3.dp,
-                                                brush = Brush.sweepGradient(
-                                                    colors = listOf(
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                                        Color(0xFF404040),
-                                                        Color(0xFF606060),
-                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                                                    )
-                                                ),
-                                                shape = CircleShape
-                                            )
-                                            .padding(3.dp)
-                                            .background(Color(0xFF1A1A1A), CircleShape),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Person,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(45.dp),
-                                            tint = Color(0xFFFF9800)
+                            if (photoUrl != null) {
+                                AsyncImage(
+                                    model = photoUrl,
+                                    contentDescription = "User Profile",
+                                    modifier = Modifier
+                                        .size(90.dp)
+                                        .clip(CircleShape)
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            shape = CircleShape
                                         )
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Text(
-                                text = username.value,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White.copy(alpha = 0.95f)
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .padding(vertical = 8.dp)
-                                    .width(40.dp)
-                                    .height(2.dp)
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
-                                                Color.Transparent
-                                            )
-                                        ),
-                                        shape = RoundedCornerShape(1.dp)
-                                    )
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .background(
-                                        color = Color(0xFF2A2A2A),
-                                        shape = RoundedCornerShape(16.dp)
-                                    )
-                                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .background(Color(0xFF1A1A1A), CircleShape)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .size(90.dp)
+                                        .clip(CircleShape)
+                                        .border(
+                                            width = 2.dp,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            shape = CircleShape
+                                        )
+                                        .background(Color(0xFF1A1A1A), CircleShape),
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Email,
+                                        imageVector = Icons.Filled.Person,
                                         contentDescription = null,
-                                        modifier = Modifier.size(16.dp),
-                                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                                    )
-
-                                    Spacer(modifier = Modifier.width(8.dp))
-
-                                    Text(
-                                        text = auth.currentUser?.email ?: useremail.value,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.8f)
+                                        modifier = Modifier.size(45.dp),
+                                        tint = Color(0xFFFF9800)
                                     )
                                 }
                             }
                         }
+
+                        Text(
+                            text = username.value,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Email,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Text(
+                                text = auth.currentUser?.email ?: useremail.value,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.7f)
+                            )
+                        }
                     }
                 }
 
+                Spacer(modifier = Modifier.height(10.dp))
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home") },
-                    selected = selectedIndexforbottomnav.value == 0,
-                    onClick = {
-                        selectedIndexforbottomnav.value = 0
-                        scope.launch { drawerState.close() }
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Groups, contentDescription = "Members") },
-                    label = { Text("Members") },
-                    selected = selectedIndexforbottomnav.value== 1,
-                    onClick = {
-                        selectedIndexforbottomnav.value = 1
-                        scope.launch { drawerState.close() }
-                    }
-                )
+                Column(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "NAVIGATION",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = "Tasks") },
-                    label = { Text("Tasks") },
-                    selected = selectedIndexforbottomnav.value == 2,
-                    onClick = {
-                        selectedIndexforbottomnav.value = 2
-                        scope.launch { drawerState.close() }
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Home") },
-                    label = { Text("About Us") },
-                    selected = false,
-                    onClick = {
-                            showdialogAboutus=true
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Outlined.Copyright, contentDescription = "Home") },
-                    label = { Text("Terms & Conditions") },
-                    selected = false,
-                    onClick = {
-                        showdialogTermsandcondition = true
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Feedback, contentDescription = "Home") },
-                    label = { Text("Feedback") },
-                    selected = false,
-                    onClick = {
-                        val feedback = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://docs.google.com/forms/d/e/1FAIpQLSftDN91vkdhso_oQV7uTmjvi50-bc_6_LRp8WVKyI4ANxIorQ/viewform?usp=dialog".toUri()
-                        )
-                        context.startActivity(feedback)
-                    }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Android, contentDescription = "Home") },
-                    label = { Text("Report Bug") },
-                    selected = false,
-                    onClick = {
-                        val bug = Intent(
-                            Intent.ACTION_VIEW,
-                            "https://github.com/Krrish-29/Devsource_App/issues/new".toUri()
-                        )
-                        context.startActivity(bug)
-                    }
-                )
+                    NavigationItem(
+                        icon = Icons.Default.Home,
+                        label = "Home",
+                        selected = selectedIndexforbottomnav.value == 0,
+                        onClick = {
+                            selectedIndexforbottomnav.value = 0
+                            scope.launch { drawerState.close() }
+                        }
+                    )
 
-                HorizontalDivider()
-                Spacer(Modifier.height(8.dp))
+                    NavigationItem(
+                        icon = Icons.Default.Groups,
+                        label = "Members",
+                        selected = selectedIndexforbottomnav.value == 1,
+                        onClick = {
+                            selectedIndexforbottomnav.value = 1
+                            scope.launch { drawerState.close() }
+                        }
+                    )
 
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Sign Out") },
-                    label = { Text("Sign Out") },
-                    selected = false,
-                    onClick = {
-                        authViewModel.signOut(context, credentialManager)
-                        navController.navigate("login")
-                    }
-                )
+                    NavigationItem(
+                        icon = Icons.Default.DateRange,
+                        label = "Tasks",
+                        selected = selectedIndexforbottomnav.value == 2,
+                        badgeCount = totalTasks.intValue,
+                        onClick = {
+                            selectedIndexforbottomnav.value = 2
+                            scope.launch { drawerState.close() }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "ABOUT & HELP",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.White.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+                    )
+
+                    NavigationItem(
+                        icon = Icons.Default.Person,
+                        label = "About Us",
+                        selected = false,
+                        onClick = { showdialogAboutus = true }
+                    )
+
+                    NavigationItem(
+                        icon = Icons.Outlined.Copyright,
+                        label = "Terms & Conditions",
+                        selected = false,
+                        onClick = { showdialogTermsandcondition = true }
+                    )
+
+                    NavigationItem(
+                        icon = Icons.Default.Feedback,
+                        label = "Feedback",
+                        selected = false,
+                        onClick = {
+                            val feedback = Intent(
+                                Intent.ACTION_VIEW,
+                                "https://docs.google.com/forms/d/e/1FAIpQLSftDN91vkdhso_oQV7uTmjvi50-bc_6_LRp8WVKyI4ANxIorQ/viewform?usp=dialog".toUri()
+                            )
+                            context.startActivity(feedback)
+                        }
+                    )
+
+                    NavigationItem(
+                        icon = Icons.Default.Android,
+                        label = "Report Bug",
+                        selected = false,
+                        onClick = {
+                            val bug = Intent(
+                                Intent.ACTION_VIEW,
+                                "https://github.com/Krrish-29/Devsource_App/issues/new".toUri()
+                            )
+                            context.startActivity(bug)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        Color.White.copy(alpha = 0.1f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    NavigationItem(
+                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        label = "Sign Out",
+                        selected = false,
+                        isSignOut = true,
+                        onClick = {
+                            authViewModel.signOut(context, credentialManager)
+                            navController.navigate("login")
+                        }
+                    )
+                }
             }
+
             if (showdialogTermsandcondition) {
                 AlertDialog(
-                    onDismissRequest = {
-                        showdialogTermsandcondition = false
-                    },
-                    title = { Text(text = "Terms & Conditions ") },
-                    text = { Text(text = "We only collect the user name , email and phone number .\nThe data collected is not shared or distributed.") },
+                    onDismissRequest = { showdialogTermsandcondition = false },
+                    title = { Text(text = "Terms & Conditions") },
+                    text = { Text(text = "We only collect the user name, email and phone number.\nThe data collected is not shared or distributed.") },
                     confirmButton = {
-                        TextButton(onClick = {
-                            showdialogTermsandcondition = false
-                        }) {
+                        TextButton(onClick = { showdialogTermsandcondition = false }) {
                             Text(text = "Close")
                         }
                     }
                 )
             }
+
             if (showdialogAboutus) {
                 AlertDialog(
-                    onDismissRequest = {
-                        showdialogAboutus = false
-                    },
+                    onDismissRequest = { showdialogAboutus = false },
                     title = { Text("About Us") },
                     text = {
                         Column {
@@ -464,7 +428,7 @@ fun HomePage(
                 )
             }
         }
-    ) {
+    ){
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
@@ -636,7 +600,102 @@ fun ClickableLink(label: String, url: String) {
         }
     )
 }
+@Composable
+private fun NavigationItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    badgeCount: Int = 0,
+    isSignOut: Boolean = false,
+    onClick: () -> Unit
+) {
+    val background = if (selected) {
+        Brush.horizontalGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            )
+        )
+    } else if (isSignOut) {
+        Brush.horizontalGradient(
+            colors = listOf(
+                Color(0xFFB71C1C).copy(alpha = 0.2f),
+                Color.Transparent
+            )
+        )
+    } else {
+        Brush.horizontalGradient(
+            colors = listOf(
+                Color.Transparent,
+                Color.Transparent
+            )
+        )
+    }
 
+    val textColor = when {
+        selected -> MaterialTheme.colorScheme.primary
+        isSignOut -> Color(0xFFEF5350)
+        else -> Color.White.copy(alpha = 0.8f)
+    }
+
+    val iconTint = when {
+        selected -> MaterialTheme.colorScheme.primary
+        isSignOut -> Color(0xFFEF5350)
+        else -> Color.White.copy(alpha = 0.6f)
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(background)
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconTint,
+            modifier = Modifier.size(24.dp)
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = textColor,
+            modifier = Modifier.weight(1f)
+        )
+
+        if (badgeCount > 0) {
+            Badge(
+                containerColor = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(start = 4.dp)
+            ) {
+                Text(
+                    text = badgeCount.toString(),
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
+        }
+
+        if (selected) {
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(24.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(2.dp)
+                    )
+            )
+        }
+    }
+}
 @Composable
 fun ContentPages(modifier: Modifier=Modifier, selectedIndexforbottomnav: MutableState<Int>, authViewModel: AuthViewModel, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>, aboutmap: MutableState<Map<String, List<String>>>, tasksmap: MutableState<Map<String, List<Pair<String, String>>>>, totalTasks:MutableState<Int>){
     when (selectedIndexforbottomnav.value){
