@@ -2,9 +2,9 @@ package com.example.devsource.App
 
 import android.util.Log
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -75,6 +74,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
+
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
@@ -391,16 +391,13 @@ fun Home(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp)
-                ) {
-                    item { DomainBadge(Icons.Default.Language, "Web Dev", primaryColor) }
-                    item { DomainBadge(Icons.Default.Android, "Android Dev", secondaryColor) }
-                    item { DomainBadge(Icons.Default.SportsEsports, "Game Dev", tertiaryColor) }
-                    item { DomainBadge(Icons.Default.Groups, "DevOps", primaryContainerColor) }
-                    item { DomainBadge(Icons.Default.Science, "AI/ML", secondaryContainerColor) }
-                }
+                InfiniteDomainBadges(
+                    primaryColor = primaryColor,
+                    secondaryColor = secondaryColor,
+                    tertiaryColor = tertiaryColor,
+                    primaryContainerColor = primaryContainerColor,
+                    secondaryContainerColor = secondaryContainerColor
+                )
             }
 
             item {
@@ -504,6 +501,7 @@ fun NewsCard(
     var expanded by remember { mutableStateOf(false) }
     val cardBackground = Color(0xFF1A1A1A)
     var isTextTruncated by remember { mutableStateOf(false) }
+    var isTitleTruncated by remember { mutableStateOf(false) }
 
     val (icon, iconColor) = when {
         newsItem.category.contains("Android", ignoreCase = true) ->
@@ -571,23 +569,13 @@ fun NewsCard(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         ),
-                        modifier = Modifier.weight(1f)
+                        maxLines = if (expanded) Int.MAX_VALUE else 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth(),
+                        onTextLayout = { result ->
+                            isTitleTruncated = result.hasVisualOverflow
+                        }
                     )
-
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = iconColor.copy(alpha = 0.15f)
-                        ),
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text(
-                            text = newsItem.date,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = iconColor,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -623,28 +611,49 @@ fun NewsCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (isTextTruncated || expanded) {
-                    TextButton(
-                        onClick = { expanded = !expanded },
-                        modifier = Modifier.align(Alignment.End),
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = iconColor
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Date on the left
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = iconColor.copy(alpha = 0.15f)
                         )
                     ) {
                         Text(
-                            if (expanded) "Show Less" else "Read More",
-                            fontWeight = FontWeight.Bold
+                            text = newsItem.date,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = iconColor,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         )
+                    }
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                    // Read More button on the right (if needed)
+                    if (isTextTruncated || isTitleTruncated || expanded) {
+                        TextButton(
+                            onClick = { expanded = !expanded },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = iconColor
+                            )
+                        ) {
+                            Text(
+                                if (expanded) "Show Less" else "Read More",
+                                fontWeight = FontWeight.Bold
+                            )
 
-                        Icon(
-                            imageVector = if (expanded)
-                                Icons.Default.KeyboardArrowUp else
-                                Icons.Default.KeyboardArrowDown,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Icon(
+                                imageVector = if (expanded)
+                                    Icons.Default.KeyboardArrowUp else
+                                    Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -730,6 +739,42 @@ private fun DomainBadge(icon: ImageVector, label: String, color: Color) {
                     textAlign = TextAlign.Center
                 )
             }
+        }
+    }
+}
+@Composable
+fun InfiniteDomainBadges(
+    primaryColor: Color,
+    secondaryColor: Color,
+    tertiaryColor: Color,
+    primaryContainerColor: Color,
+    secondaryContainerColor: Color
+) {
+    val domainBadges = listOf(
+        Triple(Icons.Default.Language, "Web Dev", primaryColor),
+        Triple(Icons.Default.Android, "Android Dev", secondaryColor),
+        Triple(Icons.Default.SportsEsports, "Game Dev", tertiaryColor),
+        Triple(Icons.Default.Groups, "DevOps", primaryContainerColor),
+        Triple(Icons.Default.Science, "AI/ML", secondaryContainerColor)
+    )
+
+    val repeatedList = List(100) { index -> domainBadges[index % domainBadges.size] }
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(repeatedList.size / 2)
+    }
+
+    LazyRow(
+        state = listState,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
+    ) {
+        items(repeatedList.size) { index ->
+            val (icon, label, color) = repeatedList[index]
+            DomainBadge(icon, label, color)
         }
     }
 }

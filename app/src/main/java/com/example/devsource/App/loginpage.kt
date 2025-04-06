@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -48,15 +49,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
-import com.example.devsource.Homepage.AuthState
-import com.example.devsource.Homepage.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>,username:MutableState<String>) {
@@ -145,10 +145,33 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
 //                }
             }
 //            Spacer(modifier = Modifier.height(15.dp))
-            Text(
-                text = "━━━━ Or Continue With Email ━━━━",
-                fontSize = 16.sp
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 35.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Divider(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(1.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
+
+                Text(
+                    text = "Or Continue With Email",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Divider(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(1.dp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
+            }
             Spacer(modifier = Modifier.height(15.dp))
             OutlinedTextField(
                 modifier = Modifier
