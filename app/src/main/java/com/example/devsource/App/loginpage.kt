@@ -49,15 +49,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthState
+import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
-import com.example.devsource.Homepage.AuthState
-import com.example.devsource.Homepage.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>,username:MutableState<String>) {
