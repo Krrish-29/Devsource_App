@@ -28,9 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.devsource.Homepage.AuthState
 import com.example.devsource.Homepage.AuthViewModel
 import com.example.devsource.R
 import com.google.firebase.auth.oAuthProvider
+import kotlinx.coroutines.delay
 import java.security.SecureRandom
 
 @Composable
@@ -53,8 +55,15 @@ fun OtpPage(
     val brightOrange = Color(0xFFFF9D45)
     val deepRed = Color(0xFFD13300)
     val darkBackground = Color(0xFF1A0D0A)
-    val randomOtp = generateOTP(6)
-
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            authViewModel.checkIfEmailVerified()
+            if (authState.value== AuthState.Authenticated) {
+                navController.navigate("fetchdata")
+            }
+        }
+    }
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -70,7 +79,6 @@ fun OtpPage(
                     )
                 )
         )
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -84,7 +92,6 @@ fun OtpPage(
                 contentScale = ContentScale.Fit
             )
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -125,97 +132,90 @@ fun OtpPage(
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Please enter the 6-digit code sent to your email ${useremail.value}",
-                        textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    BasicTextField(
-                        value = otpValue,
-                        onValueChange = {
-                            if (it.text.length <= maxChar) {
-                                otpValue = it
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                        decorationBox = {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val charArray = if (otpValue.text.length <= maxChar) {
-                                    otpValue.text.padEnd(maxChar)
-                                } else {
-                                    otpValue.text.substring(0, maxChar)
-                                }
-
-                                for (i in charArray.indices) {
-                                    val char = charArray[i]
-                                    val isActive = i < otpValue.text.length
-
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .height(58.dp)
-                                            .clip(RoundedCornerShape(16.dp))
-                                            .background(
-                                                color = if (isActive)
-                                                    Color(0xFF3A2113)
-                                                else
-                                                    Color(0xFF2A1813),
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                            .border(
-                                                width = 1.5.dp,
-                                                brush = if (isActive) {
-                                                    Brush.linearGradient(
-                                                        colors = listOf(
-                                                            neonOrange,
-                                                            brightOrange
-                                                        )
-                                                    )
-                                                } else {
-                                                    Brush.linearGradient(
-                                                        colors = listOf(
-                                                            Color.White.copy(alpha = 0.3f),
-                                                            Color.White.copy(alpha = 0.1f)
-                                                        )
-                                                    )
-                                                },
-                                                shape = RoundedCornerShape(16.dp)
-                                            )
-                                    ) {
-                                        Text(
-                                            text = if (char != ' ') char.toString() else "",
-                                            style = MaterialTheme.typography.headlineMedium,
-                                            color = if (isActive) Color.White else Color.White.copy(alpha = 0.6f),
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(36.dp))
+//                    Text(
+//                        text = "Please enter the 6-digit code sent to your email ${useremail.value}",
+//                        textAlign = TextAlign.Center,
+//                        fontSize = 16.sp,
+//                        color = Color.White.copy(alpha = 0.8f)
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(32.dp))
+//
+//                    BasicTextField(
+//                        value = otpValue,
+//                        onValueChange = {
+//                            if (it.text.length <= maxChar) {
+//                                otpValue = it
+//                            }
+//                        },
+//                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+//                        decorationBox = {
+//                            Row(
+//                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                                modifier = Modifier.fillMaxWidth(),
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                val charArray = if (otpValue.text.length <= maxChar) {
+//                                    otpValue.text.padEnd(maxChar)
+//                                } else {
+//                                    otpValue.text.substring(0, maxChar)
+//                                }
+//
+//                                for (i in charArray.indices) {
+//                                    val char = charArray[i]
+//                                    val isActive = i < otpValue.text.length
+//
+//                                    Box(
+//                                        contentAlignment = Alignment.Center,
+//                                        modifier = Modifier
+//                                            .weight(1f)
+//                                            .height(58.dp)
+//                                            .clip(RoundedCornerShape(16.dp))
+//                                            .background(
+//                                                color = if (isActive)
+//                                                    Color(0xFF3A2113)
+//                                                else
+//                                                    Color(0xFF2A1813),
+//                                                shape = RoundedCornerShape(16.dp)
+//                                            )
+//                                            .border(
+//                                                width = 1.5.dp,
+//                                                brush = if (isActive) {
+//                                                    Brush.linearGradient(
+//                                                        colors = listOf(
+//                                                            neonOrange,
+//                                                            brightOrange
+//                                                        )
+//                                                    )
+//                                                } else {
+//                                                    Brush.linearGradient(
+//                                                        colors = listOf(
+//                                                            Color.White.copy(alpha = 0.3f),
+//                                                            Color.White.copy(alpha = 0.1f)
+//                                                        )
+//                                                    )
+//                                                },
+//                                                shape = RoundedCornerShape(16.dp)
+//                                            )
+//                                    ) {
+//                                        Text(
+//                                            text = if (char != ' ') char.toString() else "",
+//                                            style = MaterialTheme.typography.headlineMedium,
+//                                            color = if (isActive) Color.White else Color.White.copy(alpha = 0.6f),
+//                                            fontWeight = FontWeight.Bold
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        },
+//                        modifier = Modifier.fillMaxWidth()
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(36.dp))
 
                     Button(
                         onClick = {
-//                            authViewModel.sendEmailVerification
-                            if (otpValue.text == 111111.toString()) {
-                                authViewModel.signup(name.toString(), useremail.toString(),password.toString())
-//                                    navController.navigate("fetchdata")
-                            } else {
-                                Toast.makeText(context, "Please enter a valid 6-digit OTP", Toast.LENGTH_SHORT).show()
-                            }
+                            authViewModel.signup(name.value, useremail.value,password.value,context)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -224,7 +224,6 @@ fun OtpPage(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = neonOrange
                         ),
-                        enabled = otpValue.text.length == maxChar
                     ) {
                         Text(
                             text = "Verify & Continue",
@@ -242,27 +241,23 @@ fun OtpPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Didn't receive code? ",
+                            text = "Didn't receive link? ",
                             color = Color.White.copy(alpha = 0.7f)
                         )
-
-                        Text(
-                            text = "Resend",
-                            color = brightOrange,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 4.dp)
-                        )
+                        Button(
+                            onClick = {
+                                authViewModel.resendVerificationEmail(context)
+                            }
+                        ) {
+                            Text(
+                                text = "Resend",
+                                color = brightOrange,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 }
             }
         }
     }
-}
-
-fun generateOTP(length: Int = 6): String {
-    val numbers = "0123456789"
-    val secureRandom = SecureRandom()
-    return (1..length)
-        .map { numbers[secureRandom.nextInt(numbers.length)] }
-        .joinToString("")
 }

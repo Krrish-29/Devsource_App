@@ -133,7 +133,7 @@ fun SignUpPage(modifier: Modifier=Modifier, navController: NavController, authVi
             username.value=name
             userpassword.value=confirmpassword
             navController.navigate("otp-page")
-        }, enabled=authState.value!=AuthState.Loading && password==confirmpassword)  {
+        }, enabled=authState.value!=AuthState.Loading && password==confirmpassword){
             Text(text="Create Account",fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(5.dp))

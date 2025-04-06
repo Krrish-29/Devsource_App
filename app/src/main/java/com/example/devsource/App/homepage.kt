@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.outlined.Copyright
@@ -66,7 +65,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -76,7 +74,6 @@ import androidx.compose.foundation.layout.Row as Row1
 import androidx.core.net.toUri
 import com.google.firebase.auth.FirebaseAuth
 import coil.compose.AsyncImage
-import org.w3c.dom.Text
 import com.example.devsource.Homepage.AuthState
 import com.example.devsource.Homepage.AuthViewModel
 
@@ -94,12 +91,22 @@ fun HomePage(
     username:MutableState<String>,
 ) {
     val authState = authViewModel.authState.observeAsState()
+
     LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.Unauthenticated -> navController.navigate("login")
+        when (val state = authState.value) {
+            is AuthState.Authenticated -> {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@LaunchedEffect
+                authViewModel.fetchUserData(userId) { name ->
+                    username.value = name ?: "Unknown"
+                }
+            }
+            is AuthState.Unauthenticated -> {
+                navController.navigate("login")
+            }
             else -> Unit
         }
     }
+
     val totalTasks = remember {  mutableIntStateOf(tasksmap.value.values.sumOf { it.size }) }
     val bottomnavItemList=listOf(
         BottomNavItem("Home", Icons.Default.Home,0),
@@ -130,7 +137,7 @@ fun HomePage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = auth.currentUser?.displayName ?: username.value,
+                        text = username.value,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -140,17 +147,19 @@ fun HomePage(
                             model = photoUrl,
                             contentDescription = "UserProfileImage",
                             modifier = Modifier
+                                .clip(CircleShape)
                                 .weight(1f)
                                 .size(48.dp)
-                                .clip(CircleShape)
                         )
                     } else {
-                        Image(
+                        Icon(
                             imageVector = Icons.Filled.Person,
                             contentDescription = "DefaultUser",
                             modifier = Modifier
                                 .size(48.dp)
-                                .clip(CircleShape)
+                                .weight(1f)
+                                .clip(CircleShape),
+                            tint = Color(0xFFFF9800)
                         )
                     }
                 }
@@ -503,8 +512,4 @@ data class BottomNavItem(
     val label:String,
     val icon: ImageVector,
     val badgeCount:Int
-)
-data class TopNavItem(
-    val label:String,
-    val icon: ImageVector
 )

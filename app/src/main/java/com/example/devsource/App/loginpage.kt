@@ -55,9 +55,10 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.delay
 import com.example.devsource.Homepage.AuthState
 import com.example.devsource.Homepage.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>) {
+fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel,useremail:MutableState<String>,username:MutableState<String>) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
@@ -66,6 +67,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Authenticated -> {
+                //   add a functionality so that based on the email of the user the name is fetched from the db
                 navController.navigate("fetchdata")
             }
             is AuthState.Error -> Toast.makeText(context,(authState.value as AuthState.Error).message, Toast.LENGTH_LONG).show()
@@ -210,7 +212,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, authV
     }
 }
 @Composable
-fun Fetchdata(modifier: Modifier = Modifier, navController: NavController, selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>,aboutteamsmap: MutableState<Map<String, List<String>>>, tasksmap:MutableState<Map<String, List<Pair<String, String>>>>) {
+fun Fetchdata(modifier: Modifier = Modifier, navController: NavController , selectedCategory: MutableState<String>, membersMap: MutableState<Map<String, List<String>>>,aboutteamsmap: MutableState<Map<String, List<String>>>, tasksmap:MutableState<Map<String, List<Pair<String, String>>>>) {
     val database = FirebaseDatabase.getInstance()
     val membersref = database.getReference("Members")
     val hasNavigated = remember { mutableStateOf(false) }
